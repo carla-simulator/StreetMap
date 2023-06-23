@@ -1,12 +1,12 @@
+// Copyright 2017 Mike Fricker. All Rights Reserved.
+
 #include "OSMFile.h"
-#include "Misc/FeedbackContext.h"
+#include "StreetMapImporting.h"
+
+
 
 FOSMFile::FOSMFile()
-	: ParsingState(ParsingState::Root),
-	  CurrentNodeID(0),
-	  CurrentNodeInfo(nullptr),
-	  CurrentWayInfo(nullptr),
-	  CurrentWayTagKey(nullptr)
+	: ParsingState( ParsingState::Root )
 {
 }
 		
@@ -95,7 +95,7 @@ bool FOSMFile::ProcessElement( const TCHAR* ElementName, const TCHAR* ElementDat
 			CurrentNodeInfo->Latitude = 0.0;
 			CurrentNodeInfo->Longitude = 0.0;
 		}
-		else if( !FCString::Stricmp( ElementName, TEXT( "way" ) ) )
+		else if (!FCString::Stricmp(ElementName, TEXT("way")))
 		{
 			ParsingState = ParsingState::Way;
 			CurrentWayInfo = new FOSMWayInfo();
@@ -109,7 +109,7 @@ bool FOSMFile::ProcessElement( const TCHAR* ElementName, const TCHAR* ElementDat
 			//        be included in our data set.  It might be nice to make this an import option.
 		}
 	}
-	else if( ParsingState == ParsingState::Way )
+	else if (ParsingState == ParsingState::Way)
 	{
 		if( !FCString::Stricmp( ElementName, TEXT( "nd" ) ) )
 		{
@@ -181,15 +181,15 @@ bool FOSMFile::ProcessAttribute( const TCHAR* AttributeName, const TCHAR* Attrib
 			CurrentWayInfo->Nodes.Add( ReferencedNode );
 					
 			// Update the node with information about the way that is referencing it
-			{
+			/* {
 				FOSMWayRef NewWayRef;
 				NewWayRef.Way = CurrentWayInfo;
 				NewWayRef.NodeIndex = NewNodeIndex;
 				ReferencedNode->WayRefs.Add( NewWayRef );
-			}
+			}*/
 		}
 	}
-	else if( ParsingState == ParsingState::Way_Tag )
+	else if (ParsingState == ParsingState::Way_Tag)
 	{
 		if( !FCString::Stricmp( AttributeName, TEXT( "k" ) ) )
 		{
@@ -205,7 +205,7 @@ bool FOSMFile::ProcessAttribute( const TCHAR* AttributeName, const TCHAR* Attrib
 			{
 				CurrentWayInfo->Ref = AttributeValue;
 			}
-			else if( !FCString::Stricmp( CurrentWayTagKey, TEXT( "highway" ) ) )
+			/*else if (!FCString::Stricmp(CurrentWayTagKey, TEXT("highway")))
 			{
 				EOSMWayType WayType = EOSMWayType::Other;
 						
@@ -320,11 +320,11 @@ bool FOSMFile::ProcessAttribute( const TCHAR* AttributeName, const TCHAR* Attrib
 						
 						
 				CurrentWayInfo->WayType = WayType;
-			}
+			}*/
 			else if( !FCString::Stricmp( CurrentWayTagKey, TEXT( "building" ) ) )
 			{
 				CurrentWayInfo->WayType = EOSMWayType::Building;
-
+				CurrentWayInfo->Category = AttributeValue;
 				if( !FCString::Stricmp( AttributeValue, TEXT( "yes" ) ) )
 				{
 					CurrentWayInfo->WayType = EOSMWayType::Building;

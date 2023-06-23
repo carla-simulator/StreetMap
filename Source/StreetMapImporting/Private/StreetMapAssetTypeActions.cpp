@@ -1,7 +1,11 @@
+// Copyright 2017 Mike Fricker. All Rights Reserved.
+
 #include "StreetMapAssetTypeActions.h"
+#include "StreetMapImporting.h"
+
 #include "StreetMap.h"
-#include "AssetRegistry/AssetData.h"
-#include "EditorFramework/AssetImportData.h"
+#include "AssetData.h"
+
 
 #define LOCTEXT_NAMESPACE "StreetMapImporting"
 

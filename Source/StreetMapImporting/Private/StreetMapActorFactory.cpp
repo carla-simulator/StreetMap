@@ -1,8 +1,18 @@
+// Copyright 2017 Mike Fricker. All Rights Reserved.
+
+// Copyright 1998-2016 Epic Games, Inc. All Rights Reserved.
+
 #include "StreetMapActorFactory.h"
-#include "AssetRegistry/AssetData.h"
+#include "StreetMapImporting.h"
+#include "AssetData.h"
+
 #include "StreetMapActor.h"
 #include "StreetMapComponent.h"
 #include "StreetMap.h"
+
+
+//////////////////////////////////////////////////////////////////////////
+// UStreetMapActorFactory
 
 UStreetMapActorFactory::UStreetMapActorFactory(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -19,7 +29,7 @@ void UStreetMapActorFactory::PostSpawnActor(UObject* Asset, AActor* NewActor)
 	{
 		AStreetMapActor* StreetMapActor = CastChecked<AStreetMapActor>(NewActor);
 		UStreetMapComponent* StreetMapComponent = StreetMapActor->GetStreetMapComponent();
-		StreetMapComponent->SetStreetMap(StreetMapAsset, false, true);
+		StreetMapComponent->SetStreetMap(StreetMapAsset, false, false);
 	}
 }
 

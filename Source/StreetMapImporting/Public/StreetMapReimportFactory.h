@@ -1,7 +1,10 @@
+// Copyright 2017 Mike Fricker. All Rights Reserved.
 #pragma once
+
 #include "StreetMapFactory.h"
 #include "EditorReimportHandler.h"
 #include "StreetMapReimportFactory.generated.h"
+
 
 /**
  * Import factory object for OpenStreetMap assets

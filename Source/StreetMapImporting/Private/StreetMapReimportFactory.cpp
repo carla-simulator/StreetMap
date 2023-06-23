@@ -1,6 +1,10 @@
+// Copyright 2017 Mike Fricker. All Rights Reserved.
+
 #include "StreetMapReimportFactory.h"
+#include "StreetMapImporting.h"
+
 #include "StreetMap.h"
-#include "EditorFramework/AssetImportData.h"
+
 
 UStreetMapReimportFactory::UStreetMapReimportFactory(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -14,9 +18,8 @@ bool UStreetMapReimportFactory::CanReimport( UObject* Obj, TArray<FString>& OutF
 	if( StreetMap != nullptr )
 	{
 		OutFilenames.Add( StreetMap->AssetImportData->GetFirstFilename() );
-		return true;
 	}
-	return false;
+	return true;
 }
 
 

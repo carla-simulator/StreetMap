@@ -1,4 +1,6 @@
+// Copyright 2017 Mike Fricker. All Rights Reserved.
 #pragma once
+
 #include "Runtime/Engine/Public/PrimitiveSceneProxy.h"
 #include "Runtime/Engine/Public/LocalVertexFactory.h"
 #include "Runtime/Engine/Public/DynamicMeshBuilder.h"
@@ -13,42 +15,37 @@ struct FStreetMapVertex
 
 	/** Location of the vertex in local space */
 	UPROPERTY()
-	FVector3f Position;
+		FVector Position;
 
 	/** Texture coordinate */
 	UPROPERTY()
-	FVector2f TextureCoordinate;
+		FVector2D TextureCoordinate;
 
 	/** Tangent vector X */
 	UPROPERTY()
-	FVector3f TangentX;
+		FVector TangentX;
 
 	/** Tangent vector Z (normal) */
 	UPROPERTY()
-	FVector3f TangentZ;
+		FVector TangentZ;
 
 	/** Color */
 	UPROPERTY()
-	FColor Color;
+		FColor Color;
 
 
-	/** Default constructor */
-	FStreetMapVertex() :
-		Position(FVector3f::ZeroVector),
-		TextureCoordinate(FVector2f::ZeroVector),
-		TangentX(FVector3f::ZeroVector),
-		TangentZ(FVector3f::ZeroVector),
-		Color(FColor::White)	
+	/** Default constructor, leaves everything uninitialized */
+	FStreetMapVertex()
 	{
 	}
 
 	/** Construct with a supplied position and tangents for the vertex */
 	FStreetMapVertex(const FVector InitLocation, const FVector2D InitTextureCoordinate, const FVector InitTangentX, const FVector InitTangentZ, const FColor InitColor)
 		: Position(InitLocation),
-		  TextureCoordinate(InitTextureCoordinate),
-		  TangentX(InitTangentX),
-		  TangentZ(InitTangentZ),
-		  Color(InitColor)
+		TextureCoordinate(InitTextureCoordinate),
+		TangentX(InitTangentX),
+		TangentZ(InitTangentZ),
+		Color(InitColor)
 	{
 	}
 };
@@ -85,7 +82,7 @@ protected:
 	void InitResources();
 
 	/** Makes a MeshBatch for rendering.  Called every time the mesh is drawn */
-	void MakeMeshBatch(struct FMeshBatch& Mesh, class FMaterialRenderProxy* WireframeMaterialRenderProxyOrNull, bool bDrawCollision = false) const;
+	void MakeMeshBatch(struct FMeshBatch& Mesh, class FMeshElementCollector& Collector, class FMaterialRenderProxy* WireframeMaterialRenderProxyOrNull, bool bDrawCollision = false) const;
 
 	/** Checks to see if this mesh must be drawn during the dynamic pass.  Note that even when this returns false, we may still
 	have other (debug) geometry to render as dynamic */
@@ -95,7 +92,7 @@ protected:
 	bool IsInCollisionView(const FEngineShowFlags& EngineShowFlags) const;
 
 	// FPrimitiveSceneProxy interface
-	virtual void DrawStaticElements(class FStaticPrimitiveDrawInterface* PDI) override;
+	//virtual void DrawStaticElements(class FStaticPrimitiveDrawInterface* PDI) override;
 	virtual void GetDynamicMeshElements(const TArray<const FSceneView*>& Views, const FSceneViewFamily& ViewFamily, uint32 VisibilityMap, class FMeshElementCollector& Collector) const override;
 	virtual uint32 GetMemoryFootprint(void) const override;
 	virtual FPrimitiveViewRelevance GetViewRelevance(const class FSceneView* View) const override;

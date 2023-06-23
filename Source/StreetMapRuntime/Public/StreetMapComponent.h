@@ -1,17 +1,20 @@
+// Copyright 2017 Mike Fricker. All Rights Reserved.
 #pragma once
+
 #include "StreetMap.h"
 #include "Components/MeshComponent.h"
 #include "Interfaces/Interface_CollisionDataProvider.h"
-#include "MaterialDomain.h"
-#include "../StreetMapSceneProxy.h"
+#include "StreetMapSceneProxy.h"
 #include "StreetMapComponent.generated.h"
+
+DECLARE_LOG_CATEGORY_EXTERN(LogNoriega, Log, All);
 
 class UBodySetup;
 
 /**
  * Component that represents a section of street map roads and buildings
  */
-UCLASS( meta=(BlueprintSpawnableComponent) , hidecategories = (Physics))
+UCLASS( Blueprintable, BlueprintType, meta=(BlueprintSpawnableComponent) )
 class STREETMAPRUNTIME_API UStreetMapComponent : public UMeshComponent, public IInterface_CollisionDataProvider
 {
 	GENERATED_BODY()
@@ -58,7 +61,7 @@ public:
 	}
 
 	/** Returns true, if the input PropertyName correspond to a collision property. */
-	bool IsCollisionProperty(const FName& PropertyName) const 
+	bool IsCollisionProperty(const FName& PropertyName) const
 	{
 		return PropertyName == TEXT("bGenerateCollision") || PropertyName == TEXT("bAllowDoubleSidedGeometry");
 	}
@@ -83,9 +86,13 @@ public:
 	 * @return Sets the street map object
 	 */
 	UFUNCTION(BlueprintCallable, Category = "StreetMap")
-		void SetStreetMap(UStreetMap* NewStreetMap, bool bClearPreviousMeshIfAny = false, bool bRebuildMesh = false);
+	void SetStreetMap(UStreetMap* NewStreetMap, bool bClearPreviousMeshIfAny = false, bool bRebuildMesh = false);
 
+	UFUNCTION(BlueprintCallable, Category = "StreetMap")
+	TArray<AActor*> GenerateTopsOfBuildings(FString MapName, UMaterialInstance* MaterialInstance);
 
+  UFUNCTION(BlueprintCallable, Category = "StreetMap")
+	AActor* GenerateTopOfBuilding(int Index, FString MapName, UMaterialInstance* MaterialInstance);
 
 	//** Begin Interface_CollisionDataProvider Interface */
 	virtual bool GetPhysicsTriMeshData(struct FTriMeshCollisionData* CollisionData, bool InUseAllTriData) override;
@@ -110,7 +117,7 @@ protected:
 public:
 
 	// UPrimitiveComponent interface
-	virtual  UBodySetup* GetBodySetup() override;
+	virtual UBodySetup* GetBodySetup() override;
 	virtual FPrimitiveSceneProxy* CreateSceneProxy() override;
 	virtual FBoxSphereBounds CalcBounds(const FTransform& LocalToWorld) const override;
 	virtual int32 GetNumMaterials() const override;
@@ -125,6 +132,10 @@ public:
 	void BuildMesh();
 
 
+	/** The street map we're representing. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "StreetMap")
+		UStreetMap* StreetMap;
+
 
 protected:
 
@@ -138,28 +149,23 @@ protected:
 	void GenerateMesh();
 
 	/** Adds a 2D line to the raw mesh */
-	void AddThick2DLine(const FVector2f Start, const FVector2f End, const float Z, const float Thickness, const FColor& StartColor, const FColor& EndColor, FBox3f& MeshBoundingBox);
+	void AddThick2DLine(const FVector2D Start, const FVector2D End, const float Z, const float Thickness, const FColor& StartColor, const FColor& EndColor, FBox& MeshBoundingBox);
 
 	/** Adds 3D triangles to the raw mesh */
-	void AddTriangles(const TArray<FVector3f>& Points, const TArray<int32>& PointIndices, const FVector3f& ForwardVector, const FVector3f& UpVector, const FColor& Color, FBox3f& MeshBoundingBox);
+	void AddTriangles(const TArray<FVector>& Points, const TArray<int32>& PointIndices, const FVector& ForwardVector, const FVector& UpVector, const FColor& Color, FBox& MeshBoundingBox);
 
 
 protected:
 
-	/** The street map we're representing. */
 	UPROPERTY(EditAnywhere, Category = "StreetMap")
-		UStreetMap* StreetMap;
+	FStreetMapMeshBuildSettings MeshBuildSettings;
 
 	UPROPERTY(EditAnywhere, Category = "StreetMap")
-		FStreetMapMeshBuildSettings MeshBuildSettings;
-
-	UPROPERTY(EditAnywhere, Category = "StreetMap")
-		FStreetMapCollisionSettings CollisionSettings;
+	FStreetMapCollisionSettings CollisionSettings;
 
 	//** Physics data for mesh collision. */
 	UPROPERTY(Transient)
-		UBodySetup* StreetMapBodySetup;
-
+	UBodySetup* StreetMapBodySetup;
 
 protected:
 	//
@@ -168,11 +174,23 @@ protected:
 
 	/** Cached raw mesh vertices */
 	UPROPERTY()
-	TArray< struct FStreetMapVertex > Vertices;
+	TArray<struct FStreetMapVertex> Vertices;
+
+	UPROPERTY()
+	TArray<FVector> VerticesPositions;
+
+	UPROPERTY()
+	TArray<FVector> VerticesNormals;
+
+	UPROPERTY()
+	TArray<FVector2D> VerticesUVs;
 
 	/** Cached raw mesh triangle indices */
 	UPROPERTY()
-	TArray< uint32 > Indices;
+	TArray<uint32> Indices;
+
+	UPROPERTY()
+	TArray<int32> ProcIndices;
 
 	/** Cached bounding box */
 	UPROPERTY()
@@ -181,4 +199,5 @@ protected:
 	/** Cached StreetMap DefaultMaterial */
 	UPROPERTY()
 	UMaterialInterface* StreetMapDefaultMaterial;
+
 };

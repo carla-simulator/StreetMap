@@ -1,6 +1,9 @@
+// Copyright 2017 Mike Fricker. All Rights Reserved.
+
 #pragma once
-#include "Math/MathFwd.h"
+
 #include "StreetMap.generated.h"
+
 
 USTRUCT(BlueprintType)
 struct STREETMAPRUNTIME_API FStreetMapCollisionSettings
@@ -41,17 +44,17 @@ public:
 
 	/** Roads base vertical offset */
 	UPROPERTY(Category = StreetMap, EditAnywhere, meta = (ClampMin = "0", UIMin = "0"), DisplayName = "Road Vertical Offset")
-	float RoadOffsetZ;
+		float RoadOffesetZ;
 
 	/** if true buildings mesh will be 3D instead of flat representation. */
 	UPROPERTY(Category = StreetMap, EditAnywhere, DisplayName = "Create 3D Buildings")
-	uint32 bWant3DBuildings : 1;
+		uint32 bWant3DBuildings : 1;
 
 	/** building level floor conversion factor in centimeters
 		@todo: harmonize with OSMToCentimetersScaleFactor refactoring
 	*/
 	UPROPERTY(Category = StreetMap, EditAnywhere, DisplayName = "Building Level Floor Factor")
-	float BuildingLevelFloorFactor = 300.0f;
+		float BuildingLevelFloorFactor = 300.0f;
 
 	/**
 	* If true, buildings mesh will receive light information.
@@ -62,42 +65,42 @@ public:
 
 	/** Streets thickness */
 	UPROPERTY(Category = StreetMap, EditAnywhere, meta = (ClampMin = "0", UIMin = "0"))
-	float StreetThickness;
+		float StreetThickness;
 
 	/** Street vertex color */
 	UPROPERTY(Category = StreetMap, EditAnywhere)
-	FLinearColor StreetColor;
+		FLinearColor StreetColor;
 
 	/** Major road thickness */
 	UPROPERTY(Category = StreetMap, EditAnywhere, meta = (ClampMin = "0", UIMin = "0"))
-	float MajorRoadThickness;
+		float MajorRoadThickness;
 
 	/** Major road vertex color */
 	UPROPERTY(Category = StreetMap, EditAnywhere)
-	FLinearColor MajorRoadColor;
+		FLinearColor MajorRoadColor;
 
 	/** Highway thickness */
 	UPROPERTY(Category = StreetMap, EditAnywhere, meta = (ClampMin = "0", UIMin = "0"))
-	float HighwayThickness;
+		float HighwayThickness;
 
 	/** Highway vertex color */
 	UPROPERTY(Category = StreetMap, EditAnywhere)
-	FLinearColor HighwayColor;
+		FLinearColor HighwayColor;
 
 	/** Streets Thickness */
 	UPROPERTY(Category = StreetMap, EditAnywhere, meta = (ClampMin = "0", UIMin = "0"))
-	float BuildingBorderThickness;
+		float BuildingBorderThickness;
 
 	/** Building border vertex color */
 	UPROPERTY(Category = StreetMap, EditAnywhere)
-	FLinearColor BuildingBorderLinearColor;
+		FLinearColor BuildingBorderLinearColor;
 
 	/** Buildings border vertical offset */
 	UPROPERTY(Category = StreetMap, EditAnywhere, meta = (ClampMin = "0", UIMin = "0"))
-	float BuildingBorderZ;
+		float BuildingBorderZ;
 
 	FStreetMapMeshBuildSettings() :
-		RoadOffsetZ(0.0f),
+		RoadOffesetZ(0.0f),
 		bWant3DBuildings(true),
 		bWantLitBuildings(true),
 		StreetThickness(800.0f),
@@ -111,6 +114,7 @@ public:
 		BuildingBorderZ(10.0f)
 	{
 	}
+
 };
 
 
@@ -206,17 +210,6 @@ struct STREETMAPRUNTIME_API FStreetMapRoad
 	{
 		return bIsOneWay == 1 ? true : false;
 	}
-
-	FStreetMapRoad() :
-		RoadName(),
-		RoadType(EStreetMapRoadType::Street),
-		NodeIndices(),
-		RoadPoints(),
-		BoundsMin(FVector2D::ZeroVector),
-		BoundsMax(FVector2D::ZeroVector),
-		bIsOneWay(0)
-	{
-	}
 };
 
 
@@ -229,11 +222,11 @@ struct STREETMAPRUNTIME_API FStreetMapRoadRef
 
 	/** Index of road in the list of all roads in this street map */
 	UPROPERTY( Category=StreetMap, EditAnywhere )
-	int32 RoadIndex = INDEX_NONE;
+	int32 RoadIndex;
 	
 	/** Index of the point along road where this node exists */
 	UPROPERTY( Category=StreetMap, EditAnywhere )
-	int32 RoadPointIndex = INDEX_NONE;
+	int32 RoadPointIndex;
 };
 
 
@@ -283,35 +276,39 @@ struct STREETMAPRUNTIME_API FStreetMapBuilding
 	GENERATED_USTRUCT_BODY()
 
 	/** Name of the building */
-	UPROPERTY( Category=StreetMap, EditAnywhere )
+	UPROPERTY( Category=StreetMap, EditAnywhere, BlueprintReadWrite )
 	FString BuildingName;
 
+	/** Category of the building */
+	UPROPERTY( Category=StreetMap, EditAnywhere, BlueprintReadWrite )
+	FString BuildingCategory;
+
 	/** Polygon points that define the perimeter of the building */
-	UPROPERTY( Category=StreetMap, EditAnywhere )
+	UPROPERTY( Category=StreetMap, EditAnywhere, BlueprintReadWrite )
 	TArray<FVector2D> BuildingPoints;
 
 	/** Height of the building in meters (if known, otherwise zero) */
-	UPROPERTY( Category=StreetMap, EditAnywhere )
-	double Height = 0.0;
+	UPROPERTY( Category=StreetMap, EditAnywhere, BlueprintReadWrite )
+	float Height;
 
 	/** Levels of the building (if known, otherwise zero) */
-	UPROPERTY(Category = StreetMap, EditAnywhere)
-	int BuildingLevels = 0;
+	UPROPERTY(Category = StreetMap, EditAnywhere, BlueprintReadWrite )
+	int BuildingLevels;
 
 	// @todo: Performance: Bounding information could be computed at load time if we want to avoid the memory cost of storing it
 
 	/** 2D bounds (min) of this building's points */
-	UPROPERTY( Category=StreetMap, EditAnywhere )
-	FVector2D BoundsMin = FVector2D::ZeroVector;
+	UPROPERTY( Category=StreetMap, EditAnywhere, BlueprintReadWrite )
+	FVector2D BoundsMin;
 	
 	/** 2D bounds (max) of this building's points */
-	UPROPERTY( Category=StreetMap, EditAnywhere )
-	FVector2D BoundsMax = FVector2D::ZeroVector;
+	UPROPERTY( Category=StreetMap, EditAnywhere, BlueprintReadWrite )
+	FVector2D BoundsMax;
 };
 
 
 /** A loaded street map */
-UCLASS()
+UCLASS( Blueprintable, BlueprintType )
 class STREETMAPRUNTIME_API UStreetMap : public UObject
 {
 	GENERATED_BODY()
@@ -382,7 +379,7 @@ protected:
 	TArray<FStreetMapNode> Nodes;
 
 	/** List of all buildings on the street map */
-	UPROPERTY( Category=StreetMap, VisibleAnywhere)
+	UPROPERTY( Category=StreetMap, VisibleAnywhere, BlueprintReadOnly )
 	TArray<FStreetMapBuilding> Buildings;
 
 	/** 2D bounds (min) of this map's roads and buildings */
@@ -394,8 +391,9 @@ protected:
 	FVector2D BoundsMax;
 
 #if WITH_EDITORONLY_DATA
+public:
 	/** Importing data and options used for this mesh */
-	UPROPERTY( VisibleAnywhere, Instanced, Category=ImportSettings )
+	UPROPERTY( VisibleAnywhere, Instanced, Category=ImportSettings, BlueprintReadWrite )
 	class UAssetImportData* AssetImportData;
 
 	friend class UStreetMapFactory;
@@ -563,6 +561,8 @@ inline float FStreetMapRoad::FindPositionAlongRoadForNode( const class UStreetMa
 {
 	float CurrentPointPositionAlongRoad = 0.0f;
 
+	bool bFoundLocation = false;
+	const int32 NumPoints = RoadPoints.Num();
 	for( int32 CurrentPointIndex = 0; CurrentPointIndex < PointIndexForNode; ++CurrentPointIndex )
 	{
 		const FVector2D CurrentPointLocation = RoadPoints[ CurrentPointIndex ];

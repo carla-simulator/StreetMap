@@ -1,13 +1,18 @@
+// Copyright 2017 Mike Fricker. All Rights Reserved.
+
 #include "StreetMapFactory.h"
-#include "EditorFramework/AssetImportData.h"
+#include "StreetMapImporting.h"
+
 #include "OSMFile.h"
 #include "StreetMap.h"
+
 
 // Latitude/longitude scale factor
 //			- https://en.wikipedia.org/wiki/Equator#Exact_length
 static const double EarthCircumference = 40075036.0;
 const double UStreetMapFactory::LatitudeLongitudeScale = EarthCircumference / 360.0; // meters per degree
-
+FVector2D UStreetMapFactory::LatLonOrigin = FVector2D(0,0);
+const float OSMToCentimetersScaleFactor = 100.0f;
 
 UStreetMapFactory::UStreetMapFactory(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -38,7 +43,7 @@ UObject* UStreetMapFactory::FactoryCreateText( UClass* Class, UObject* Parent, F
 
 	if( !bLoadedOkay )
 	{
-		StreetMap->MarkAsGarbage();
+		StreetMap->MarkPendingKill();
 		StreetMap = nullptr;
 	}
 
@@ -51,36 +56,14 @@ bool UStreetMapFactory::LoadFromOpenStreetMapXMLFile( UStreetMap* StreetMap, FSt
 	// OSM data is stored in meters.  This is the scale factor to convert those units into UE4's native units (cm)
 	// Keep in mind that if this is changed, UStreetMapComponent sizes for roads may need to be updated too!
 	// @todo: We should make this scale factor customizable as an import option
-	const double OSMToCentimetersScaleFactor = 100.0;
 
+  const FVector2D NewLatLonOrigin = LatLonOrigin;
 
-	// Converts latitude to meters
-	auto ConvertLatitudeToMeters = []( const double Latitude ) -> double
-	{
-		return -Latitude * LatitudeLongitudeScale;
-	};
+  UE_LOG(LogStreetMapImporting, Log, TEXT("LoadFromOpenStreetMapXMLFile ORIGIN SET  %s ."), *(LatLonOrigin.ToString()) );
 
-	// Converts longitude to meters
-	auto ConvertLongitudeToMeters = []( const double Longitude, const double Latitude ) -> double
-	{
-		return Longitude * LatitudeLongitudeScale * FMath::Cos( FMath::DegreesToRadians( Latitude ) );
-	};
-
-	// Converts latitude and longitude to X/Y coordinates, relative to some other latitude/longitude
-	auto ConvertLatLongToMetersRelative = [ConvertLatitudeToMeters, ConvertLongitudeToMeters]( 
-		const double Latitude, 
-		const double Longitude, 
-		const double RelativeToLatitude, 
-		const double RelativeToLongitude ) -> FVector2D
-	{
-		// Applies Sanson-Flamsteed (sinusoidal) Projection (see http://www.progonos.com/furuti/MapProj/Normal/CartHow/HowSanson/howSanson.html)
-		return FVector2d(
-			ConvertLongitudeToMeters( Longitude, Latitude ) - ConvertLongitudeToMeters( RelativeToLongitude, Latitude ),
-			ConvertLatitudeToMeters( Latitude ) - ConvertLatitudeToMeters( RelativeToLatitude ) );
-	};
 
 	// Adds a road to the street map using the OpenStreetMap data, flattening the road's coordinates into our map's space
-	auto AddRoadForWay = [ConvertLatLongToMetersRelative, OSMToCentimetersScaleFactor]( 
+	auto AddRoadForWay = [&, NewLatLonOrigin]( 
 		const FOSMFile& OSMFile, 
 		UStreetMap& StreetMapRef, 
 		const FOSMFile::FOSMWayInfo& OSMWay, 
@@ -111,9 +94,6 @@ bool UStreetMapFactory::LoadFromOpenStreetMapXMLFile( UStreetMap* StreetMap, FSt
 			case FOSMFile::EOSMWayType::Road:	// @todo: Consider excluding "Road" from our data set, as it could be a highway that wasn't properly tagged in OSM yet
 				RoadType = EStreetMapRoadType::Street;
 				break;
-
-			default:
-				RoadType = EStreetMapRoadType::Other;
 		}
 
 		if( RoadType != EStreetMapRoadType::Other )
@@ -148,11 +128,8 @@ bool UStreetMapFactory::LoadFromOpenStreetMapXMLFile( UStreetMap* StreetMap, FSt
 					// we get as much precision as possible.
 					const double RelativeToLatitude = OSMFile.AverageLatitude;
 					const double RelativeToLongitude = OSMFile.AverageLongitude;
-					const FVector2D NodePos = ConvertLatLongToMetersRelative(
-						OSMNode.Latitude,
-						OSMNode.Longitude,
-						RelativeToLatitude,
-						RelativeToLongitude ) * OSMToCentimetersScaleFactor;
+					const FVector2D NodePos = GetTransversemercProjection( OSMNode.Latitude,
+						OSMNode.Longitude, NewLatLonOrigin.X, NewLatLonOrigin.Y );
 
 					// Update bounding box
 					{
@@ -207,14 +184,13 @@ bool UStreetMapFactory::LoadFromOpenStreetMapXMLFile( UStreetMap* StreetMap, FSt
 		return false;
 	};
 
-
 	// Adds a building to the street map using the OpenStreetMap data, flattening the road's coordinates into our map's space
-	auto AddBuildingForWay = [ConvertLatLongToMetersRelative, OSMToCentimetersScaleFactor]( 
+	auto AddBuildingForWay = [ NewLatLonOrigin]( 
 		const FOSMFile& OSMFile, 
 		UStreetMap& StreetMapRef, 
 		const FOSMFile::FOSMWayInfo& OSMWay ) -> bool
 	{
-		if( OSMWay.WayType == FOSMFile::EOSMWayType::Building )
+    if( OSMWay.WayType == FOSMFile::EOSMWayType::Building )
 		{
 			// Require at least three points so that we don't have degenerate polygon!
 			if( OSMWay.Nodes.Num() > 2 )
@@ -236,11 +212,8 @@ bool UStreetMapFactory::LoadFromOpenStreetMapXMLFile( UStreetMap* StreetMap, FSt
 					// we get as much precision as possible.
 					const double RelativeToLatitude = OSMFile.AverageLatitude;
 					const double RelativeToLongitude = OSMFile.AverageLongitude;
-					const FVector2d NodePos = ConvertLatLongToMetersRelative(
-						OSMNode.Latitude,
-						OSMNode.Longitude,
-						RelativeToLatitude,
-						RelativeToLongitude ) * OSMToCentimetersScaleFactor;
+          const FVector2D NodePos = GetTransversemercProjection( OSMNode.Latitude,
+						OSMNode.Longitude, NewLatLonOrigin.X, NewLatLonOrigin.Y );
 
 					// Update bounding box
 					{
@@ -281,6 +254,7 @@ bool UStreetMapFactory::LoadFromOpenStreetMapXMLFile( UStreetMap* StreetMap, FSt
 				}
 
 				NewBuilding.BuildingName = OSMWay.Name;
+				NewBuilding.BuildingCategory = OSMWay.Category;
 				if( NewBuilding.BuildingName.IsEmpty() )
 				{
 					NewBuilding.BuildingName = OSMWay.Ref;
@@ -435,4 +409,22 @@ bool UStreetMapFactory::LoadFromOpenStreetMapXMLFile( UStreetMap* StreetMap, FSt
 	return true;
 }
 
+FVector2D UStreetMapFactory::GetTransversemercProjection(float lat, float lon, float lat0, float lon0)
+{
+  // earth radius in m
+  const float R = 6373000.0f;
+  float latt = FMath::DegreesToRadians(lat);
+  float lonn  = FMath::DegreesToRadians(lon - lon0);
+  float latt0 = FMath::DegreesToRadians(lat0);
+  float eps = atan(tan(latt)/cos(lonn));
+  float nab = asinh(sin(lonn)/sqrt(tan(latt)*tan(latt)+cos(lonn)*cos(lonn)));
+  float x = R*nab;
+  float y = R*eps;
+  float eps0 = atan(tan(latt0)/cos(0));
+  float nab0 = asinh(sin(0)/sqrt(tan(latt0)*tan(latt0)+cos(0)*cos(0)));
+  float x0 = R*nab0;
+  float y0 = R*eps0;
+  FVector2D Result = FVector2D(x, -(y - y0)) * OSMToCentimetersScaleFactor;
 
+  return Result;
+}

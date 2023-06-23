@@ -1,6 +1,9 @@
+// Copyright 2017 Mike Fricker. All Rights Reserved.
+
 #include "StreetMapStyle.h"
+#include "StreetMapImporting.h"
+
 #include "Styling/SlateStyle.h"
-#include "Styling/SlateStyleRegistry.h"
 #include "Interfaces/IPluginManager.h"
 
 #define IMAGE_BRUSH( RelativePath, ... ) FSlateImageBrush( FStreetMapStyle::InContent( RelativePath, ".png" ), __VA_ARGS__ )
@@ -11,7 +14,7 @@ FString FStreetMapStyle::InContent(const FString& RelativePath, const ANSICHAR* 
 	return (IconsDir / RelativePath) + Extension;
 }
 
-TSharedPtr< FSlateStyleSet > FStreetMapStyle::StyleSet = nullptr;
+TSharedPtr< FSlateStyleSet > FStreetMapStyle::StyleSet = NULL;
 TSharedPtr< class ISlateStyle > FStreetMapStyle::Get() { return StyleSet; }
 
 void FStreetMapStyle::Initialize()
