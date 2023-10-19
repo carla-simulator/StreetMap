@@ -35,7 +35,12 @@ struct FStreetMapVertex
 
 
 	/** Default constructor, leaves everything uninitialized */
-	FStreetMapVertex()
+	FStreetMapVertex() :
+    Position(FVector::ZeroVector),
+    TextureCoordinate(FVector2D(0,0)),
+    TangentX(FVector::ZeroVector),
+    TangentZ(FVector::ZeroVector),
+    Color(0,0,0,0)
 	{
 	}
 
