@@ -19,13 +19,13 @@
     {
       "Name" : "StreetMapRuntime",
       "Type" : "Editor",
-      "LoadingPhase" : "Default"
+      "LoadingPhase" : "PreDefault"
     },
 
     {
       "Name" : "StreetMapImporting",
       "Type" : "Editor",
-      "LoadingPhase" : "Default"
+      "LoadingPhase" : "PreDefault"
     },
   ],
   "Plugins": [
