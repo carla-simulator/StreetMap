@@ -1,5 +1,5 @@
 {
-  "FileVersion" : 3,
+  "FileVersion" : 4,
   "Version" : 1,
   "VersionName" : "1.0",
   "FriendlyName" : "Street Map",
@@ -13,7 +13,7 @@
   "EnabledByDefault" : true,
   "CanContainContent" : true,
   "IsBetaVersion" : false,
-  "Installed" : false,
+  "Installed" : true,
   "Modules" :
   [
     {
