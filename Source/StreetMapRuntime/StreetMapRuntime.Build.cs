@@ -9,21 +9,21 @@ namespace UnrealBuildTool.Rules
     {
       PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
 
-      PrivateDependencyModuleNames.AddRange(
-        new string[] {
+      PrivateDependencyModuleNames.AddRange(new string[]
+        {
           "Core",
           "CoreUObject",
           "Engine",
           "RHI",
           "RenderCore",
           "PropertyEditor",
-          "GeometricObjects",
+          "GeometryCore",
           "ProceduralMeshComponent",
           "Carla"
         }
       );
 
-      PrivateIncludePaths.AddRange(new string[]{"StreetMapRuntime/Private"});
+      PrivateIncludePaths.Add("StreetMapRuntime/Private");
     }
   }
 }
