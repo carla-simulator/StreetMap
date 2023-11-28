@@ -24,6 +24,7 @@ namespace UnrealBuildTool.Rules
       );
 
       PrivateIncludePaths.AddRange(new string[]{"StreetMapRuntime/Private"});
+  		bIgnoreUnresolvedSymbols=true;
     }
   }
 }
