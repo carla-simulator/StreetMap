@@ -4,7 +4,7 @@
 
 #include "StreetMapActorFactory.h"
 #include "StreetMapImporting.h"
-#include "AssetData.h"
+#include "AssetRegistry/AssetData.h"
 
 #include "StreetMapActor.h"
 #include "StreetMapComponent.h"

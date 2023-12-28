@@ -38,12 +38,12 @@ bool FPolygonTools::TriangulatePolygon( const TArray<FVector2D>& Polygon, TArray
       VertexIndices[ PointIndex ] = ( NumVertices - 1 ) - PointIndex;
     }
   }
-  TArray<FVector2<float>> InputVertices;
-  TArray<FIndex3i> OutTriangles;
+  TArray<FVector2f> InputVertices;
+  TArray<UE::Geometry::FIndex3i> OutTriangles;
   if(OutWindsClockwise){
     for( int32 PointIndex = 0; PointIndex < NumVertices; PointIndex++ )
     {
-      InputVertices.Add(FVector2<float>(Polygon[PointIndex].X, Polygon[PointIndex].Y));
+      InputVertices.Add(FVector2f(Polygon[PointIndex].X, Polygon[PointIndex].Y));
     }
   }
   else
@@ -51,13 +51,13 @@ bool FPolygonTools::TriangulatePolygon( const TArray<FVector2D>& Polygon, TArray
     for( int32 PointIndex = 0; PointIndex < NumVertices; PointIndex++ )
     {
       int RealIndex = ( NumVertices - 1 ) - PointIndex;
-      InputVertices.Add(FVector2<float>(Polygon[RealIndex].X, Polygon[RealIndex].Y));
+      InputVertices.Add(FVector2f(Polygon[RealIndex].X, Polygon[RealIndex].Y));
     }
   }
 
   PolygonTriangulation::TriangulateSimplePolygon<float>(InputVertices, OutTriangles);
 
-  for( FIndex3i Triangle : OutTriangles)
+  for (auto Triangle : OutTriangles)
   {
     TriangulatedIndices.Add(Triangle.A);
     TriangulatedIndices.Add(Triangle.B);

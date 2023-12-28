@@ -7,6 +7,9 @@
 #include "Runtime/Engine/Public/SceneManagement.h"
 #include "Runtime/Renderer/Public/MeshPassProcessor.h"
 #include "Runtime/Renderer/Public/PrimitiveSceneInfo.h"
+#include "MaterialShared.h"
+#include "Materials/MaterialRenderProxy.h"
+
 
 
 FStreetMapSceneProxy::FStreetMapSceneProxy(const UStreetMapComponent* InComponent)
@@ -35,9 +38,9 @@ void FStreetMapSceneProxy::Init(const UStreetMapComponent* InComponent, const TA
 	{
 		const FStreetMapVertex& StreetMapVert = Vertices[VertIdx];
 		FDynamicMeshVertex& Vert = DynamicVertices[VertIdx];
-		Vert.Position = StreetMapVert.Position;
+		Vert.Position = FVector3f(StreetMapVert.Position);
 		Vert.Color = StreetMapVert.Color;
-		Vert.TextureCoordinate[0] = StreetMapVert.TextureCoordinate;
+		Vert.TextureCoordinate[0] = FVector2f(StreetMapVert.TextureCoordinate);
 		Vert.TangentX = StreetMapVert.TangentX;
 		Vert.TangentZ = StreetMapVert.TangentZ;
 	}

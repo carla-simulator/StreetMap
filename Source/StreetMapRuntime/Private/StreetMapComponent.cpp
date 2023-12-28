@@ -107,7 +107,7 @@ bool UStreetMapComponent::GetPhysicsTriMeshData(struct FTriMeshCollisionData* Co
 
   for (int32 VertexIndex = 0; VertexIndex < NumVertices; VertexIndex++)
   {
-    CollisionData->Vertices[VertexIndex] = Vertices[VertexIndex].Position;
+      CollisionData->Vertices[VertexIndex] = FVector3f(Vertices[VertexIndex].Position);
   }
 
   // Copy indices data

@@ -8,7 +8,7 @@
 #include "StreetMapFactory.h"
 #include "StreetMap.h"
 #include "Engine/AssetManager.h"
-#include "AssetData.h"
+#include "AssetRegistry/AssetData.h"
 
 UStreetMap* UStreetMapImportBlueprintLibrary::ImportStreetMap(FString Path, FString DestinationAssetPath, FVector2D OriginLatLon)
 {

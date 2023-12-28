@@ -4,7 +4,7 @@
 #include "StreetMapImporting.h"
 
 #include "StreetMap.h"
-#include "AssetData.h"
+#include "AssetRegistry/AssetData.h"
 
 
 #define LOCTEXT_NAMESPACE "StreetMapImporting"
