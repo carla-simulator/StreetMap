@@ -149,7 +149,7 @@ struct STREETMAPRUNTIME_API FStreetMapRoad
 	
 	/** Type of road */
 	UPROPERTY( Category=StreetMap, EditAnywhere )
-	TEnumAsByte<EStreetMapRoadType> RoadType;
+	TEnumAsByte<EStreetMapRoadType> RoadType = EStreetMapRoadType::Street;
 	
 	/** Nodes along this road, one at each point in the RoadPoints list */
 	UPROPERTY( Category=StreetMap, EditAnywhere )
@@ -163,15 +163,15 @@ struct STREETMAPRUNTIME_API FStreetMapRoad
 
 	/** 2D bounds (min) of this road's points */
 	UPROPERTY( Category=StreetMap, EditAnywhere )
-	FVector2D BoundsMin;
-	
+	FVector2D BoundsMin = FVector2D::ZeroVector;
+
 	/** 2D bounds (max) of this road's points */
-	UPROPERTY( Category=StreetMap, EditAnywhere )
-	FVector2D BoundsMax;
+	UPROPERTY(Category = StreetMap, EditAnywhere)
+	FVector2D BoundsMax = FVector2D::ZeroVector;
 
 	/** True if this node is a one way.  One way nodes are only traversable in the order the nodes are listed in the above array. */
 	UPROPERTY( Category=StreetMap, EditAnywhere )
-	uint8 bIsOneWay : 1;
+	uint8 bIsOneWay : 1 = 0;
 
 
 	/** Returns this node's index */
@@ -222,11 +222,11 @@ struct STREETMAPRUNTIME_API FStreetMapRoadRef
 
 	/** Index of road in the list of all roads in this street map */
 	UPROPERTY( Category=StreetMap, EditAnywhere )
-	int32 RoadIndex;
+	int32 RoadIndex = 0;
 	
 	/** Index of the point along road where this node exists */
 	UPROPERTY( Category=StreetMap, EditAnywhere )
-	int32 RoadPointIndex;
+	int32 RoadPointIndex = 0;
 };
 
 
@@ -289,21 +289,21 @@ struct STREETMAPRUNTIME_API FStreetMapBuilding
 
 	/** Height of the building in meters (if known, otherwise zero) */
 	UPROPERTY( Category=StreetMap, EditAnywhere, BlueprintReadWrite )
-	float Height;
+	float Height = 0.0F;
 
 	/** Levels of the building (if known, otherwise zero) */
 	UPROPERTY(Category = StreetMap, EditAnywhere, BlueprintReadWrite )
-	int BuildingLevels;
+	int BuildingLevels = 0;
 
 	// @todo: Performance: Bounding information could be computed at load time if we want to avoid the memory cost of storing it
 
 	/** 2D bounds (min) of this building's points */
 	UPROPERTY( Category=StreetMap, EditAnywhere, BlueprintReadWrite )
-	FVector2D BoundsMin;
+	FVector2D BoundsMin = FVector2D::ZeroVector;
 	
 	/** 2D bounds (max) of this building's points */
 	UPROPERTY( Category=StreetMap, EditAnywhere, BlueprintReadWrite )
-	FVector2D BoundsMax;
+	FVector2D BoundsMax = FVector2D::ZeroVector;
 };
 
 
