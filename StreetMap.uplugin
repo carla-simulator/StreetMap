@@ -30,11 +30,6 @@
   ],
   "Plugins": [
     {
-      "Name" : "Carla",
-      "Enabled" : true
-    },
-
-    {
       "Name" : "GeometryProcessing",
       "Enabled" : true
     },

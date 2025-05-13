@@ -1,4 +1,5 @@
 // Copyright 2017 Mike Fricker. All Rights Reserved.
+using System.IO;
 
 namespace UnrealBuildTool.Rules
 {
@@ -8,7 +9,7 @@ namespace UnrealBuildTool.Rules
     : base(Target)
     {
       PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
-
+      PublicDependencyModuleNames.AddRange(new string[] { "CarlaMeshGeneration" });
       PrivateDependencyModuleNames.AddRange(
         new string[] {
           "Core",
@@ -19,11 +20,12 @@ namespace UnrealBuildTool.Rules
           "PropertyEditor",
           "GeometricObjects",
           "ProceduralMeshComponent",
-          "Carla"
         }
       );
 
-      PrivateIncludePaths.AddRange(new string[]{"StreetMapRuntime/Private"});
+
+
+        PrivateIncludePaths.AddRange(new string[]{"StreetMapRuntime/Private"});
     }
   }
 }
