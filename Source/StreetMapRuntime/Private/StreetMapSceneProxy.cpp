@@ -8,6 +8,14 @@
 #include "Runtime/Renderer/Public/MeshPassProcessor.h"
 #include "Runtime/Renderer/Public/PrimitiveSceneInfo.h"
 
+#if ENGINE_MAJOR_VERSION < 5
+using V2 = FVector2D;
+using V3 = FVector;
+#else
+#include "Materials\MaterialRenderProxy.h"
+using V2 = FVector2f;
+using V3 = FVector3f;
+#endif
 
 FStreetMapSceneProxy::FStreetMapSceneProxy(const UStreetMapComponent* InComponent)
 	: FPrimitiveSceneProxy(InComponent),
@@ -35,11 +43,11 @@ void FStreetMapSceneProxy::Init(const UStreetMapComponent* InComponent, const TA
 	{
 		const FStreetMapVertex& StreetMapVert = Vertices[VertIdx];
 		FDynamicMeshVertex& Vert = DynamicVertices[VertIdx];
-		Vert.Position = StreetMapVert.Position;
+		Vert.Position = V3(StreetMapVert.Position);
 		Vert.Color = StreetMapVert.Color;
-		Vert.TextureCoordinate[0] = StreetMapVert.TextureCoordinate;
-		Vert.TangentX = StreetMapVert.TangentX;
-		Vert.TangentZ = StreetMapVert.TangentZ;
+		Vert.TextureCoordinate[0] = V2(StreetMapVert.TextureCoordinate);
+		Vert.TangentX = V3(StreetMapVert.TangentX);
+		Vert.TangentZ = V3(StreetMapVert.TangentZ);
 	}
 
 	VertexBuffer.InitFromDynamicVertex(&VertexFactory, DynamicVertices);
@@ -152,7 +160,26 @@ void FStreetMapSceneProxy::MakeMeshBatch( FMeshBatch& Mesh, class FMeshElementCo
 	// BatchElement.PrimitiveUniformBuffer = CreatePrimitiveUniformBufferImmediate(GetLocalToWorld(), GetBounds(), GetLocalBounds(), true, UseEditorDepthTest());
 
 	FDynamicPrimitiveUniformBuffer& DynamicPrimitiveUniformBuffer = Collector.AllocateOneFrameResource<FDynamicPrimitiveUniformBuffer>();
-	DynamicPrimitiveUniformBuffer.Set(GetLocalToWorld(), GetLocalToWorld(), GetBounds(), GetLocalBounds(), true, false, DrawsVelocity(), false);
+#if ENGINE_MAJOR_VERSION < 5
+	DynamicPrimitiveUniformBuffer.Set(
+		GetLocalToWorld(),
+		GetLocalToWorld(),
+		GetBounds(),
+		GetLocalBounds(),
+		true,
+		false,
+		DrawsVelocity(),
+		false);
+#else
+	DynamicPrimitiveUniformBuffer.Set(
+		GetLocalToWorld(),
+		GetLocalToWorld(),
+		GetBounds(),
+		GetLocalBounds(),
+		true,
+		false,
+		DrawsVelocity());
+#endif
 	BatchElement.PrimitiveUniformBufferResource = &DynamicPrimitiveUniformBuffer.UniformBuffer;
 
 	BatchElement.FirstIndex = 0;

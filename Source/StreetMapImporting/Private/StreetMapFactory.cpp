@@ -43,7 +43,11 @@ UObject* UStreetMapFactory::FactoryCreateText( UClass* Class, UObject* Parent, F
 
 	if( !bLoadedOkay )
 	{
+#if ENGINE_MAJOR_VERSION < 5
 		StreetMap->MarkPendingKill();
+#else
+		StreetMap->MarkAsGarbage();
+#endif
 		StreetMap = nullptr;
 	}
 

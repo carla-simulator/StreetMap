@@ -20,6 +20,16 @@
 #include "PropertyEditorModule.h"
 #endif //WITH_EDITOR
 
+#if ENGINE_MAJOR_VERSION > 4
+#include "IndexTypes.h"
+using UE::Geometry::FIndex3i;
+using V3 = FVector3f;
+using V2 = FVector2f;
+#else
+using V3 = FVector;
+using V2 = FVector2D;
+#endif
+
 DEFINE_LOG_CATEGORY(LogNoriega);
 
 UStreetMapComponent::UStreetMapComponent(const FObjectInitializer& ObjectInitializer)
@@ -108,7 +118,7 @@ bool UStreetMapComponent::GetPhysicsTriMeshData(struct FTriMeshCollisionData* Co
 
   for (int32 VertexIndex = 0; VertexIndex < NumVertices; VertexIndex++)
   {
-    CollisionData->Vertices[VertexIndex] = Vertices[VertexIndex].Position;
+    CollisionData->Vertices[VertexIndex] = V3(Vertices[VertexIndex].Position);
   }
 
   // Copy indices data

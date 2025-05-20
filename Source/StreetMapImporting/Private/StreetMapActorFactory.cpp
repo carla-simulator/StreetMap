@@ -4,7 +4,14 @@
 
 #include "StreetMapActorFactory.h"
 #include "StreetMapImporting.h"
+
+#ifndef __has_include
 #include "AssetData.h"
+#else
+#if __has_include("AssetData.h")
+#include "AssetData.h"
+#endif
+#endif
 
 #include "StreetMapActor.h"
 #include "StreetMapComponent.h"
@@ -33,6 +40,12 @@ void UStreetMapActorFactory::PostSpawnActor(UObject* Asset, AActor* NewActor)
 	}
 }
 
+#if ENGINE_MAJOR_VERSION > 4 && ENGINE_MINOR_VERSION > 3
+void UStreetMapActorFactory::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
+{
+	unimplemented();
+}
+#else
 void UStreetMapActorFactory::PostCreateBlueprint(UObject* Asset, AActor* CDO)
 {
 	if (Asset != nullptr && CDO != nullptr)
@@ -43,6 +56,7 @@ void UStreetMapActorFactory::PostCreateBlueprint(UObject* Asset, AActor* CDO)
 		StreetMapComponent->SetStreetMap(StreetMapAsset, true, false);
 	}
 }
+#endif
 
 bool UStreetMapActorFactory::CanCreateActorFrom(const FAssetData& AssetData, FText& OutErrorMsg)
 {

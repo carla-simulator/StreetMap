@@ -18,14 +18,16 @@ namespace UnrealBuildTool.Rules
           "RHI",
           "RenderCore",
           "PropertyEditor",
-          "GeometricObjects",
           "ProceduralMeshComponent",
         }
       );
 
+      if (Target.Version.MajorVersion < 5)
+        PrivateDependencyModuleNames.Add("GeometricObjects");
+      else
+        PrivateDependencyModuleNames.Add("GeometryCore");
 
-
-        PrivateIncludePaths.AddRange(new string[]{"StreetMapRuntime/Private"});
+      PrivateIncludePaths.AddRange(new string[] { "StreetMapRuntime/Private" });
     }
   }
 }
