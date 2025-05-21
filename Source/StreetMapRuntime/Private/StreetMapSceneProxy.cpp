@@ -12,7 +12,7 @@
 using V2 = FVector2D;
 using V3 = FVector;
 #else
-#include "Materials\MaterialRenderProxy.h"
+#include "Materials/MaterialRenderProxy.h"
 using V2 = FVector2f;
 using V3 = FVector3f;
 #endif
