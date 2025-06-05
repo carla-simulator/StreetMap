@@ -42,6 +42,10 @@
     {
       "Name" : "EditorScriptingUtilities",
       "Enabled" : true
+    },
+    {
+      "Name" : "Carla",
+      "Enabled" : true
     }
   ]
 }

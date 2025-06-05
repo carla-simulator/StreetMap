@@ -12,7 +12,7 @@
 #include "PhysicsEngine/BodySetup.h"
 #include "ProceduralMeshComponent.h"
 
-#include "Generation/MapGenFunctionLibrary.h"
+#include "Carla/BlueprintLibary/MapGenFunctionLibrary.h"
 
 
 #if WITH_EDITOR
