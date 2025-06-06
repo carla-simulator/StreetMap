@@ -25,10 +25,12 @@ UStreetMap* UStreetMapImportBlueprintLibrary::ImportStreetMap(FString Path, FStr
       return Cast<UStreetMap>(AssetData[0].GetAsset() );
     }
   }
-
+  
   FString FileName = FPaths::GetCleanFilename(Path);
   FileName.RemoveFromEnd(".osm");
-  if( AssetRegistry.GetAssetsByClass(FTopLevelAssetPath(TEXT("StreetMap")), AssetData, false) ) {
+  FTopLevelAssetPath AssetClassPath = FTopLevelAssetPath(FName("/Script/StreetMapRuntime"), FName("StreetMap")); 
+  if (AssetRegistry.GetAssetsByClass(AssetClassPath, AssetData, false))
+  {
     for( auto Asset : AssetData ){
       UE_LOG(LogStreetMapImporting, Log, TEXT("FileName %s, AssetName %s ."), *FileName,*(Asset.AssetName.ToString() ) );
       if( FileName.Equals( Asset.AssetName.ToString() ) ){
@@ -52,6 +54,8 @@ UStreetMap* UStreetMapImportBlueprintLibrary::ImportStreetMap(FString Path, FStr
   if(NewAssets.Num() != 0){
     return Cast<UStreetMap>(NewAssets[0]);
   }else{
+    UE_LOG(LogStreetMapImporting, Error, TEXT("Error importing %s ."), *Path );
+
     return nullptr;
   }
 }

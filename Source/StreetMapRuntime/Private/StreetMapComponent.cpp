@@ -715,7 +715,7 @@ AActor* UStreetMapComponent::GenerateTopOfBuilding(int Index, FString MapName, U
         TempPoints[ PointIndex ] = FVector( Building.BuildingPoints[ ( Building.BuildingPoints.Num() - PointIndex ) - 1 ], BuildingFillZ );
       }
 
-      if(WindsClockwise){
+      if(!WindsClockwise){
         for( int32 PointIndex = 0; PointIndex < Building.BuildingPoints.Num(); PointIndex++ )
         {
           BPositions.Add( FVector(Building.BuildingPoints[PointIndex], BuildingFillZ) );
