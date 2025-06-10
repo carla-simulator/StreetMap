@@ -11,13 +11,24 @@
 
 #include "PhysicsEngine/BodySetup.h"
 #include "ProceduralMeshComponent.h"
-#include "Carla/OpenDrive/OpenDriveGenerator.h"
-#include "Carla/BlueprintLibary/MapGenFunctionLibrary.h"
+
+#include "Generation/MapGenFunctionLibrary.h"
+
 
 #if WITH_EDITOR
 #include "Modules/ModuleManager.h"
 #include "PropertyEditorModule.h"
 #endif //WITH_EDITOR
+
+#if ENGINE_MAJOR_VERSION > 4
+#include "IndexTypes.h"
+using UE::Geometry::FIndex3i;
+using V3 = FVector3f;
+using V2 = FVector2f;
+#else
+using V3 = FVector;
+using V2 = FVector2D;
+#endif
 
 DEFINE_LOG_CATEGORY(LogNoriega);
 
@@ -107,7 +118,7 @@ bool UStreetMapComponent::GetPhysicsTriMeshData(struct FTriMeshCollisionData* Co
 
   for (int32 VertexIndex = 0; VertexIndex < NumVertices; VertexIndex++)
   {
-    CollisionData->Vertices[VertexIndex] = Vertices[VertexIndex].Position;
+    CollisionData->Vertices[VertexIndex] = V3(Vertices[VertexIndex].Position);
   }
 
   // Copy indices data
@@ -704,7 +715,7 @@ AActor* UStreetMapComponent::GenerateTopOfBuilding(int Index, FString MapName, U
         TempPoints[ PointIndex ] = FVector( Building.BuildingPoints[ ( Building.BuildingPoints.Num() - PointIndex ) - 1 ], BuildingFillZ );
       }
 
-      if(WindsClockwise){
+      if(!WindsClockwise){
         for( int32 PointIndex = 0; PointIndex < Building.BuildingPoints.Num(); PointIndex++ )
         {
           BPositions.Add( FVector(Building.BuildingPoints[PointIndex], BuildingFillZ) );

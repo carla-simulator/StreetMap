@@ -7,8 +7,16 @@
 #include "StreetMapImportBlueprintLibrary.h"
 #include "StreetMapFactory.h"
 #include "StreetMap.h"
+#include "StreetMapImporting.h"
 #include "Engine/AssetManager.h"
+#include "AssetToolsModule.h"
+#include "IAssetTools.h"
+
+#if ENGINE_MAJOR_VERSION > 4
+#include "AssetRegistry/IAssetRegistry.h"
+#else
 #include "AssetData.h"
+#endif
 
 UStreetMap* UStreetMapImportBlueprintLibrary::ImportStreetMap(FString Path, FString DestinationAssetPath, FVector2D OriginLatLon)
 {
@@ -23,7 +31,8 @@ UStreetMap* UStreetMapImportBlueprintLibrary::ImportStreetMap(FString Path, FStr
 
   FString FileName = FPaths::GetCleanFilename(Path);
   FileName.RemoveFromEnd(".osm");
-  if( AssetRegistry.GetAssetsByClass(TEXT("StreetMap"), AssetData, false) ) {
+  FTopLevelAssetPath AssetClassPath = FTopLevelAssetPath(FName("/Script/StreetMapRuntime"), FName("StreetMap"));
+  if(AssetRegistry.GetAssetsByClass(AssetClassPath, AssetData, false)) {
     for( auto Asset : AssetData ){
       UE_LOG(LogStreetMapImporting, Log, TEXT("FileName %s, AssetName %s ."), *FileName,*(Asset.AssetName.ToString() ) );
       if( FileName.Equals( Asset.AssetName.ToString() ) ){

@@ -3,7 +3,13 @@
 #include "PolygonTools.h"
 #include "StreetMapRuntime.h"
 #include "CompGeom/PolygonTriangulation.h"
-
+#if ENGINE_MAJOR_VERSION > 4
+#include "IndexTypes.h"
+using UE::Geometry::FIndex3i;
+using V2 = FVector2f;
+#else
+using V2 = FVector2D;
+#endif
 
 // Based off "Efficient Polygon Triangulation" algorithm by John W. Ratcliff (http://flipcode.net/archives/Efficient_Polygon_Triangulation.shtml)
 bool FPolygonTools::TriangulatePolygon( const TArray<FVector2D>& Polygon, TArray<int32>& TempIndices, TArray<int32>& TriangulatedIndices, bool& OutWindsClockwise )
@@ -38,12 +44,12 @@ bool FPolygonTools::TriangulatePolygon( const TArray<FVector2D>& Polygon, TArray
       VertexIndices[ PointIndex ] = ( NumVertices - 1 ) - PointIndex;
     }
   }
-  TArray<FVector2<float>> InputVertices;
+  TArray<V2> InputVertices;
   TArray<FIndex3i> OutTriangles;
   if(OutWindsClockwise){
     for( int32 PointIndex = 0; PointIndex < NumVertices; PointIndex++ )
     {
-      InputVertices.Add(FVector2<float>(Polygon[PointIndex].X, Polygon[PointIndex].Y));
+      InputVertices.Add(V2(Polygon[PointIndex].X, Polygon[PointIndex].Y));
     }
   }
   else
@@ -51,7 +57,7 @@ bool FPolygonTools::TriangulatePolygon( const TArray<FVector2D>& Polygon, TArray
     for( int32 PointIndex = 0; PointIndex < NumVertices; PointIndex++ )
     {
       int RealIndex = ( NumVertices - 1 ) - PointIndex;
-      InputVertices.Add(FVector2<float>(Polygon[RealIndex].X, Polygon[RealIndex].Y));
+      InputVertices.Add(V2(Polygon[RealIndex].X, Polygon[RealIndex].Y));
     }
   }
 

@@ -4,7 +4,15 @@
 #include "StreetMapImporting.h"
 
 #include "StreetMap.h"
+
+#ifndef __has_include
 #include "AssetData.h"
+#else
+#if __has_include("AssetData.h")
+#include "AssetData.h"
+#endif
+#endif
+
 
 
 #define LOCTEXT_NAMESPACE "StreetMapImporting"
