@@ -17,6 +17,7 @@
 #include "Widgets/Notifications/SNotificationList.h"
 #include "Framework/Notifications/NotificationManager.h"
 #include "Misc/AssertionMacros.h"
+#include "AssetToolsModule.h"
 
 #if ENGINE_MAJOR_VERSION < 5
 #include "AssetRegistryModule.h"
