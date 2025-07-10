@@ -306,6 +306,29 @@ struct STREETMAPRUNTIME_API FStreetMapBuilding
 	FVector2D BoundsMax;
 };
 
+/** A sign */
+USTRUCT( BlueprintType )
+struct STREETMAPRUNTIME_API FStreetMapSign
+{
+	GENERATED_USTRUCT_BODY()
+
+	/** Name of the building */
+	UPROPERTY( Category=StreetMap, EditAnywhere, BlueprintReadWrite )
+	double OSM_ID;
+
+	/** Category of the sign */
+	UPROPERTY( Category=StreetMap, EditAnywhere, BlueprintReadWrite )
+	FString SignValue;
+
+	UPROPERTY(Category = StreetMap, EditAnywhere, BlueprintReadWrite)
+	int MaxSpeed;
+
+	/** 2D lat/lon position of the sign */
+	UPROPERTY( Category=StreetMap, EditAnywhere, BlueprintReadWrite )
+	FVector2D Position;
+
+};
+
 
 /** A loaded street map */
 UCLASS( Blueprintable, BlueprintType )
@@ -357,6 +380,17 @@ public:
 		return Buildings;
 	}
 
+	const TArray<FStreetMapSign>& GetSigns() const
+	{
+		return Signs;
+	}
+
+	/** Gets all of the signs */
+	TArray<FStreetMapSign>& GetSigns()
+	{
+		return Signs;
+	}
+
 	/** Gets the bounding box of the map */
 	FVector2D GetBoundsMin() const
 	{
@@ -381,6 +415,10 @@ protected:
 	/** List of all buildings on the street map */
 	UPROPERTY( Category=StreetMap, VisibleAnywhere, BlueprintReadOnly )
 	TArray<FStreetMapBuilding> Buildings;
+
+	/** List of all signs on the street map */
+	UPROPERTY( Category=StreetMap, VisibleAnywhere, BlueprintReadOnly )
+	TArray<FStreetMapSign> Signs;
 
 	/** 2D bounds (min) of this map's roads and buildings */
 	UPROPERTY( Category=StreetMap, VisibleAnywhere)

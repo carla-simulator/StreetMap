@@ -155,6 +155,8 @@ public:
 		double Latitude;
 		double Longitude;
 		TArray<FOSMWayRef> WayRefs;
+		FString Type;
+		int MaxSpeed;
 	};
 		
 		
@@ -206,7 +208,8 @@ protected:
 		Node,
 		Way,
 		Way_NodeRef,
-		Way_Tag
+		Way_Tag,
+		Node_Tag
 	};
 		
 	// Current state of parser
@@ -223,6 +226,9 @@ protected:
 		
 	// Current way's tag key string
 	const TCHAR* CurrentWayTagKey;
+
+	// Current way's tag key string
+	const TCHAR* CurrentNodeTagKey;
 };
 
 
