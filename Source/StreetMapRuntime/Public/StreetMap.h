@@ -306,9 +306,9 @@ struct STREETMAPRUNTIME_API FStreetMapBuilding
 	FVector2D BoundsMax;
 };
 
-/** A sign */
+/** A Miscelanious */
 USTRUCT( BlueprintType )
-struct STREETMAPRUNTIME_API FStreetMapSign
+struct STREETMAPRUNTIME_API FStreetMapMisc
 {
 	GENERATED_USTRUCT_BODY()
 
@@ -318,10 +318,7 @@ struct STREETMAPRUNTIME_API FStreetMapSign
 
 	/** Category of the sign */
 	UPROPERTY( Category=StreetMap, EditAnywhere, BlueprintReadWrite )
-	FString SignValue;
-
-	UPROPERTY(Category = StreetMap, EditAnywhere, BlueprintReadWrite)
-	int MaxSpeed;
+	FString Type;
 
 	/** 2D lat/lon position of the sign */
 	UPROPERTY( Category=StreetMap, EditAnywhere, BlueprintReadWrite )
@@ -331,49 +328,6 @@ struct STREETMAPRUNTIME_API FStreetMapSign
 	TMap<FString, FString> Properties;
 };
 
-/** A Tree */
-USTRUCT( BlueprintType )
-struct STREETMAPRUNTIME_API FStreetMapTree
-{
-	GENERATED_USTRUCT_BODY()
-
-	/** Name of the building */
-	UPROPERTY( Category=StreetMap, EditAnywhere, BlueprintReadWrite )
-	double OSM_ID;
-
-	/** Category of the sign */
-	UPROPERTY( Category=StreetMap, EditAnywhere, BlueprintReadWrite )
-	FString TreeType;
-
-	/** 2D lat/lon position of the sign */
-	UPROPERTY( Category=StreetMap, EditAnywhere, BlueprintReadWrite )
-	FVector2D Position;
-
-	UPROPERTY( Category=StreetMap, EditAnywhere, BlueprintReadWrite )
-	TMap<FString, FString> Properties;
-};
-
-/** An amenity */
-USTRUCT( BlueprintType )
-struct STREETMAPRUNTIME_API FStreetMapAmenity
-{
-	GENERATED_USTRUCT_BODY()
-
-	/** Name of the building */
-	UPROPERTY( Category=StreetMap, EditAnywhere, BlueprintReadWrite )
-	double OSM_ID;
-
-	/** Category of the sign */
-	UPROPERTY( Category=StreetMap, EditAnywhere, BlueprintReadWrite )
-	FString AmenityType;
-
-	/** 2D lat/lon position of the sign */
-	UPROPERTY( Category=StreetMap, EditAnywhere, BlueprintReadWrite )
-	FVector2D Position;
-
-	UPROPERTY( Category=StreetMap, EditAnywhere, BlueprintReadWrite )
-	TMap<FString, FString> Properties;
-};
 
 
 /** A loaded street map */
@@ -426,25 +380,25 @@ public:
 		return Buildings;
 	}
 
-	const TArray<FStreetMapSign>& GetSigns() const
+	const TArray<FStreetMapMisc>& GetSigns() const
 	{
 		return Signs;
 	}
 
 	/** Gets all of the signs */
-	TArray<FStreetMapSign>& GetSigns()
+	TArray<FStreetMapMisc>& GetSigns()
 	{
 		return Signs;
 	}
 
 	/** Gets all of the amenities */
-	const TArray<FStreetMapAmenity>& GetAmenities() const
+	const TArray<FStreetMapMisc>& GetAmenities() const
 	{
 		return Amenities;
 	}
 
 	/** Gets all of the trees */
-	const TArray<FStreetMapTree>& GetTrees() const
+	const TArray<FStreetMapMisc>& GetTrees() const
 	{
 		return Trees;
 	}
@@ -478,15 +432,15 @@ protected:
 
 	/** List of all signs on the street map */
 	UPROPERTY( Category=StreetMap, VisibleAnywhere, BlueprintReadOnly )
-	TArray<FStreetMapSign> Signs;
+	TArray<FStreetMapMisc> Signs;
 
 	/** List of all trees on the street map */
 	UPROPERTY( Category=StreetMap, VisibleAnywhere, BlueprintReadOnly )
-	TArray<FStreetMapTree> Trees;
+	TArray<FStreetMapMisc> Trees;
 
 	/** List of all amenities on the street map */
 	UPROPERTY( Category=StreetMap, VisibleAnywhere, BlueprintReadOnly )
-	TArray<FStreetMapAmenity> Amenities;
+	TArray<FStreetMapMisc> Amenities;
 
 	/** 2D bounds (min) of this map's roads and buildings */
 	UPROPERTY( Category=StreetMap, VisibleAnywhere)
