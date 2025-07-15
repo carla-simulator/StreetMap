@@ -139,6 +139,16 @@ public:
 		Other,
 	};
 
+	enum class EOSSignType 
+	{
+		Crossing,
+		Max_Speed,
+		Traffic_Lights,
+		Give_Way,
+		Stop,
+		Bus_Stop,
+		Other,
+	};
 
 	struct FOSMWayRef
 	{
@@ -156,6 +166,7 @@ public:
 		double Longitude;
 		TArray<FOSMWayRef> WayRefs;
 		FString Type;
+		//EOSSignType;
 		int MaxSpeed;
 	};
 		

@@ -398,7 +398,7 @@ bool UStreetMapFactory::LoadFromOpenStreetMapXMLFile( UStreetMap* StreetMap, FSt
 			}
 		}
 	
-		//Adding Sings
+		//Adding Signs
 		if(!OSMNode.Type.IsEmpty())
 		{
 			FStreetMapSign& NewSign = *new( StreetMap->Signs )FStreetMapSign();
