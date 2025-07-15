@@ -117,7 +117,19 @@ public:
 
 };
 
-
+/** Types of nodes */
+UENUM( BlueprintType )
+enum class EStreetMapNodeType : uint8
+{
+	/** Invalid Type */
+	Invalid = 0 UMETA(DisplayName = "Invalid"),
+	/** Traffic sign */
+	TrafficSign = 1 UMETA(DisplayName = "Traffic Sign"),
+	/**	Unnatural feature (containers picnics tables, etc) */
+	Amenity = 2 UMETA(DisplayName = "Amenity"),
+	/** Natural feature (tree, rock, etc) */
+	Tree = 3 UMETA(DisplayName = "Tree"),
+};
 
 /** Types of roads */
 UENUM( BlueprintType )
@@ -318,7 +330,7 @@ struct STREETMAPRUNTIME_API FStreetMapMisc
 
 	/** Category of the sign */
 	UPROPERTY( Category=StreetMap, EditAnywhere, BlueprintReadWrite )
-	FString Type;
+	EStreetMapNodeType Type;
 
 	/** 2D lat/lon position of the sign */
 	UPROPERTY( Category=StreetMap, EditAnywhere, BlueprintReadWrite )

@@ -176,6 +176,19 @@ bool UStreetMapFactory::LoadFromOpenStreetMapXMLFile( UStreetMap* StreetMap, FSt
 				StreetMapRef.BoundsMax.X = FMath::Max( StreetMapRef.BoundsMax.X, BoundsMax.X );
 				StreetMapRef.BoundsMax.Y = FMath::Max( StreetMapRef.BoundsMax.Y, BoundsMax.Y );
 
+				if (!OSMWay.MaxSpeed.IsEmpty())
+				{
+					FStreetMapMisc& NewSpeedSign = *new( StreetMapRef.Signs )FStreetMapMisc();
+
+					NewSpeedSign.Type = EStreetMapNodeType::TrafficSign;
+					NewSpeedSign.Properties.Add(TEXT("maxspeed"), OSMWay.MaxSpeed);
+
+					int32 MidIndex = NewRoad.RoadPoints.Num() / 2;
+					NewSpeedSign.Position = NewRoad.RoadPoints.IsValidIndex(MidIndex) 
+						? NewRoad.RoadPoints[MidIndex]
+						: FVector2D::ZeroVector;
+				}
+
 				return true;
 			}
 			else
@@ -405,7 +418,7 @@ bool UStreetMapFactory::LoadFromOpenStreetMapXMLFile( UStreetMap* StreetMap, FSt
 			FStreetMapMisc& NewSign = *new( StreetMap->Signs )FStreetMapMisc();
 			NewSign.OSM_ID = NodeMapHashPair.Key;
 			NewSign.Position = GetTransversemercProjection(OSMNode.Latitude, OSMNode.Longitude, NewLatLonOrigin.X, NewLatLonOrigin.Y);
-			NewSign.Type = OSMNode.Type;
+			NewSign.Type = EStreetMapNodeType::TrafficSign;
 			NewSign.Properties = OSMNode.KeyValues;
 		}
 		else if (OSMNode.NodeType == FOSMFile::EOSMNodeType::Natural)
@@ -414,7 +427,7 @@ bool UStreetMapFactory::LoadFromOpenStreetMapXMLFile( UStreetMap* StreetMap, FSt
 			FStreetMapMisc& NewNaturalFeature = *new( StreetMap->Trees )FStreetMapMisc();
 			NewNaturalFeature.OSM_ID = NodeMapHashPair.Key;
 			NewNaturalFeature.Position = GetTransversemercProjection(OSMNode.Latitude, OSMNode.Longitude, NewLatLonOrigin.X, NewLatLonOrigin.Y);
-			NewNaturalFeature.Type = OSMNode.Type;
+			NewNaturalFeature.Type = EStreetMapNodeType::Tree;
 			NewNaturalFeature.Properties = OSMNode.KeyValues;
 		}
 		else if (OSMNode.NodeType == FOSMFile::EOSMNodeType::Amenity)
@@ -423,7 +436,7 @@ bool UStreetMapFactory::LoadFromOpenStreetMapXMLFile( UStreetMap* StreetMap, FSt
 			FStreetMapMisc& NewAmenity = *new( StreetMap->Amenities )FStreetMapMisc();
 			NewAmenity.OSM_ID = NodeMapHashPair.Key;
 			NewAmenity.Position = GetTransversemercProjection(OSMNode.Latitude, OSMNode.Longitude, NewLatLonOrigin.X, NewLatLonOrigin.Y);
-			NewAmenity.Type = OSMNode.Type;
+			NewAmenity.Type = EStreetMapNodeType::Amenity;
 			NewAmenity.Properties = OSMNode.KeyValues;
 		}
 		

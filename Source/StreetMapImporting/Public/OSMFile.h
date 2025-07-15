@@ -189,6 +189,7 @@ public:
 		FString Category;
 		TArray<FOSMNodeInfo*> Nodes;
 		EOSMWayType WayType;
+		FString MaxSpeed;
 		double Height;
 		int32 BuildingLevels;
 
