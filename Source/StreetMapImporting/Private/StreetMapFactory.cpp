@@ -399,14 +399,35 @@ bool UStreetMapFactory::LoadFromOpenStreetMapXMLFile( UStreetMap* StreetMap, FSt
 		}
 	
 		//Adding Signs
-		if(!OSMNode.Type.IsEmpty())
+		if (OSMNode.NodeType == FOSMFile::EOSMNodeType::TrafficSign)
 		{
+			// Add the sign to the street map
 			FStreetMapSign& NewSign = *new( StreetMap->Signs )FStreetMapSign();
 			NewSign.OSM_ID = NodeMapHashPair.Key;
 			NewSign.Position = GetTransversemercProjection(OSMNode.Latitude, OSMNode.Longitude, NewLatLonOrigin.X, NewLatLonOrigin.Y);
 			NewSign.SignValue = OSMNode.Type;
 			NewSign.MaxSpeed = OSMNode.MaxSpeed;
+			NewSign.Properties = OSMNode.KeyValues;
 		}
+		else if (OSMNode.NodeType == FOSMFile::EOSMNodeType::Natural)
+		{
+			// Add the natural feature to the street map
+			FStreetMapTree& NewNaturalFeature = *new( StreetMap->Trees )FStreetMapTree();
+			NewNaturalFeature.OSM_ID = NodeMapHashPair.Key;
+			NewNaturalFeature.Position = GetTransversemercProjection(OSMNode.Latitude, OSMNode.Longitude, NewLatLonOrigin.X, NewLatLonOrigin.Y);
+			NewNaturalFeature.TreeType = OSMNode.Type;
+			NewNaturalFeature.Properties = OSMNode.KeyValues;
+		}
+		else if (OSMNode.NodeType == FOSMFile::EOSMNodeType::Amenity)
+		{
+			// Add the amenity to the street map
+			FStreetMapAmenity& NewAmenity = *new( StreetMap->Amenities )FStreetMapAmenity();
+			NewAmenity.OSM_ID = NodeMapHashPair.Key;
+			NewAmenity.Position = GetTransversemercProjection(OSMNode.Latitude, OSMNode.Longitude, NewLatLonOrigin.X, NewLatLonOrigin.Y);
+			NewAmenity.AmenityType = OSMNode.Type;
+			NewAmenity.Properties = OSMNode.KeyValues;
+		}
+		
 	}
 
 	// Validation test: Make sure that all roads have at least two nodes referencing them, one at the beginning and

@@ -327,6 +327,52 @@ struct STREETMAPRUNTIME_API FStreetMapSign
 	UPROPERTY( Category=StreetMap, EditAnywhere, BlueprintReadWrite )
 	FVector2D Position;
 
+	UPROPERTY( Category=StreetMap, EditAnywhere, BlueprintReadWrite )
+	TMap<FString, FString> Properties;
+};
+
+/** A Tree */
+USTRUCT( BlueprintType )
+struct STREETMAPRUNTIME_API FStreetMapTree
+{
+	GENERATED_USTRUCT_BODY()
+
+	/** Name of the building */
+	UPROPERTY( Category=StreetMap, EditAnywhere, BlueprintReadWrite )
+	double OSM_ID;
+
+	/** Category of the sign */
+	UPROPERTY( Category=StreetMap, EditAnywhere, BlueprintReadWrite )
+	FString TreeType;
+
+	/** 2D lat/lon position of the sign */
+	UPROPERTY( Category=StreetMap, EditAnywhere, BlueprintReadWrite )
+	FVector2D Position;
+
+	UPROPERTY( Category=StreetMap, EditAnywhere, BlueprintReadWrite )
+	TMap<FString, FString> Properties;
+};
+
+/** An amenity */
+USTRUCT( BlueprintType )
+struct STREETMAPRUNTIME_API FStreetMapAmenity
+{
+	GENERATED_USTRUCT_BODY()
+
+	/** Name of the building */
+	UPROPERTY( Category=StreetMap, EditAnywhere, BlueprintReadWrite )
+	double OSM_ID;
+
+	/** Category of the sign */
+	UPROPERTY( Category=StreetMap, EditAnywhere, BlueprintReadWrite )
+	FString AmenityType;
+
+	/** 2D lat/lon position of the sign */
+	UPROPERTY( Category=StreetMap, EditAnywhere, BlueprintReadWrite )
+	FVector2D Position;
+
+	UPROPERTY( Category=StreetMap, EditAnywhere, BlueprintReadWrite )
+	TMap<FString, FString> Properties;
 };
 
 
@@ -391,6 +437,20 @@ public:
 		return Signs;
 	}
 
+	/** Gets all of the amenities */
+	const TArray<FStreetMapAmenity>& GetAmenities() const
+	{
+		return Amenities;
+	}
+
+	/** Gets all of the trees */
+	const TArray<FStreetMapTree>& GetTrees() const
+	{
+		return Trees;
+	}
+
+
+
 	/** Gets the bounding box of the map */
 	FVector2D GetBoundsMin() const
 	{
@@ -419,6 +479,14 @@ protected:
 	/** List of all signs on the street map */
 	UPROPERTY( Category=StreetMap, VisibleAnywhere, BlueprintReadOnly )
 	TArray<FStreetMapSign> Signs;
+
+	/** List of all trees on the street map */
+	UPROPERTY( Category=StreetMap, VisibleAnywhere, BlueprintReadOnly )
+	TArray<FStreetMapTree> Trees;
+
+	/** List of all amenities on the street map */
+	UPROPERTY( Category=StreetMap, VisibleAnywhere, BlueprintReadOnly )
+	TArray<FStreetMapAmenity> Amenities;
 
 	/** 2D bounds (min) of this map's roads and buildings */
 	UPROPERTY( Category=StreetMap, VisibleAnywhere)
@@ -908,5 +976,3 @@ inline float FStreetMapNode::GetConnectionCost( const UStreetMap& StreetMap, con
 
 	return TotalCost;
 }
-
-

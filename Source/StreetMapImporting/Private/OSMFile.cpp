@@ -385,11 +385,31 @@ bool FOSMFile::ProcessAttribute( const TCHAR* AttributeName, const TCHAR* Attrib
 			if( !FCString::Stricmp( CurrentNodeTagKey, TEXT( "highway" ) )  ||
 				!FCString::Stricmp( CurrentNodeTagKey, TEXT( "traffic_sign" ) ))
 			{
-				CurrentNodeInfo->Type = AttributeValue;
+				CurrentNodeInfo->NodeType = EOSMNodeType::TrafficSign;
+				CurrentNodeInfo->KeyValues.Add( CurrentNodeTagKey, AttributeValue );
+
 			}
 			else if ( !FCString::Stricmp( CurrentNodeTagKey, TEXT( "maxspeed" ) ) )
 			{
 				CurrentNodeInfo->MaxSpeed = FPlatformString::Atoi64(AttributeValue);
+				CurrentNodeInfo->NodeType = EOSMNodeType::TrafficSign;
+				CurrentNodeInfo->KeyValues.Add( CurrentNodeTagKey, AttributeValue );
+
+			}
+			else if ( !FCString::Stricmp( CurrentNodeTagKey, TEXT( "natural" ) ) )
+			{
+				CurrentNodeInfo->NodeType = EOSMNodeType::Natural;
+				CurrentNodeInfo->KeyValues.Add( CurrentNodeTagKey, AttributeValue );
+
+			}
+			else if ( !FCString::Stricmp( CurrentNodeTagKey, TEXT( "amenity" ) ) )
+			{
+				CurrentNodeInfo->NodeType = EOSMNodeType::Amenity;
+				CurrentNodeInfo->KeyValues.Add( CurrentNodeTagKey, AttributeValue );
+			}
+			else
+			{
+				CurrentNodeInfo->KeyValues.Add( CurrentNodeTagKey, AttributeValue );
 			}
 		}
 	}
