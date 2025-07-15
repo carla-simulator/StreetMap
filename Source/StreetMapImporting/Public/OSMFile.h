@@ -150,6 +150,14 @@ public:
 		Other,
 	};
 
+	enum class EOSMNodeType
+	{
+		Invalid,
+		TrafficSign,
+		Natural,
+		Amenity
+	};
+
 	struct FOSMWayRef
 	{
 		// Way that we're referencing at this node
@@ -158,7 +166,8 @@ public:
 		// Index of the node in the way's array of nodes
 		int32 NodeIndex;
 	};
-		
+	
+
 		
 	struct FOSMNodeInfo
 	{
@@ -166,6 +175,8 @@ public:
 		double Longitude;
 		TArray<FOSMWayRef> WayRefs;
 		FString Type;
+		EOSMNodeType NodeType;
+		TMap<FString, FString> KeyValues;
 		//EOSSignType;
 		int MaxSpeed;
 	};
@@ -178,6 +189,7 @@ public:
 		FString Category;
 		TArray<FOSMNodeInfo*> Nodes;
 		EOSMWayType WayType;
+		FString MaxSpeed;
 		double Height;
 		int32 BuildingLevels;
 
@@ -241,5 +253,3 @@ protected:
 	// Current way's tag key string
 	const TCHAR* CurrentNodeTagKey;
 };
-
-

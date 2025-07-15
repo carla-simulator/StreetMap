@@ -188,12 +188,12 @@ bool FOSMFile::ProcessAttribute( const TCHAR* AttributeName, const TCHAR* Attrib
 			CurrentWayInfo->Nodes.Add( ReferencedNode );
 					
 			// Update the node with information about the way that is referencing it
-			/* {
+			{
 				FOSMWayRef NewWayRef;
 				NewWayRef.Way = CurrentWayInfo;
 				NewWayRef.NodeIndex = NewNodeIndex;
 				ReferencedNode->WayRefs.Add( NewWayRef );
-			}*/
+			}
 		}
 	}
 	else if (ParsingState == ParsingState::Way_Tag)
@@ -212,7 +212,11 @@ bool FOSMFile::ProcessAttribute( const TCHAR* AttributeName, const TCHAR* Attrib
 			{
 				CurrentWayInfo->Ref = AttributeValue;
 			}
-			/*else if (!FCString::Stricmp(CurrentWayTagKey, TEXT("highway")))
+			else if( !FCString::Stricmp( CurrentWayTagKey, TEXT("maxspeed") ) )
+			{
+				CurrentWayInfo->MaxSpeed = AttributeValue;
+			}
+			else if (!FCString::Stricmp(CurrentWayTagKey, TEXT("highway")))
 			{
 				EOSMWayType WayType = EOSMWayType::Other;
 						
@@ -327,7 +331,7 @@ bool FOSMFile::ProcessAttribute( const TCHAR* AttributeName, const TCHAR* Attrib
 						
 						
 				CurrentWayInfo->WayType = WayType;
-			}*/
+			}
 			else if( !FCString::Stricmp( CurrentWayTagKey, TEXT( "building" ) ) )
 			{
 				CurrentWayInfo->WayType = EOSMWayType::Building;
@@ -385,11 +389,31 @@ bool FOSMFile::ProcessAttribute( const TCHAR* AttributeName, const TCHAR* Attrib
 			if( !FCString::Stricmp( CurrentNodeTagKey, TEXT( "highway" ) )  ||
 				!FCString::Stricmp( CurrentNodeTagKey, TEXT( "traffic_sign" ) ))
 			{
-				CurrentNodeInfo->Type = AttributeValue;
+				CurrentNodeInfo->NodeType = EOSMNodeType::TrafficSign;
+				CurrentNodeInfo->KeyValues.Add( CurrentNodeTagKey, AttributeValue );
+
 			}
 			else if ( !FCString::Stricmp( CurrentNodeTagKey, TEXT( "maxspeed" ) ) )
 			{
 				CurrentNodeInfo->MaxSpeed = FPlatformString::Atoi64(AttributeValue);
+				CurrentNodeInfo->NodeType = EOSMNodeType::TrafficSign;
+				CurrentNodeInfo->KeyValues.Add( CurrentNodeTagKey, AttributeValue );
+
+			}
+			else if ( !FCString::Stricmp( CurrentNodeTagKey, TEXT( "natural" ) ) )
+			{
+				CurrentNodeInfo->NodeType = EOSMNodeType::Natural;
+				CurrentNodeInfo->KeyValues.Add( CurrentNodeTagKey, AttributeValue );
+
+			}
+			else if ( !FCString::Stricmp( CurrentNodeTagKey, TEXT( "amenity" ) ) )
+			{
+				CurrentNodeInfo->NodeType = EOSMNodeType::Amenity;
+				CurrentNodeInfo->KeyValues.Add( CurrentNodeTagKey, AttributeValue );
+			}
+			else
+			{
+				CurrentNodeInfo->KeyValues.Add( CurrentNodeTagKey, AttributeValue );
 			}
 		}
 	}
