@@ -139,6 +139,16 @@ public:
 		Other,
 	};
 
+	enum class EOSSignType 
+	{
+		Crossing,
+		Max_Speed,
+		Traffic_Lights,
+		Give_Way,
+		Stop,
+		Bus_Stop,
+		Other,
+	};
 
 	struct FOSMWayRef
 	{
@@ -155,6 +165,9 @@ public:
 		double Latitude;
 		double Longitude;
 		TArray<FOSMWayRef> WayRefs;
+		FString Type;
+		//EOSSignType;
+		int MaxSpeed;
 	};
 		
 		
@@ -206,7 +219,8 @@ protected:
 		Node,
 		Way,
 		Way_NodeRef,
-		Way_Tag
+		Way_Tag,
+		Node_Tag
 	};
 		
 	// Current state of parser
@@ -223,6 +237,9 @@ protected:
 		
 	// Current way's tag key string
 	const TCHAR* CurrentWayTagKey;
+
+	// Current way's tag key string
+	const TCHAR* CurrentNodeTagKey;
 };
 
 

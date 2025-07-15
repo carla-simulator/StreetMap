@@ -397,6 +397,16 @@ bool UStreetMapFactory::LoadFromOpenStreetMapXMLFile( UStreetMap* StreetMap, FSt
 				// Node doesn't reference any roads that we kept, or the data was malformed.  Filter it out.
 			}
 		}
+	
+		//Adding Signs
+		if(!OSMNode.Type.IsEmpty())
+		{
+			FStreetMapSign& NewSign = *new( StreetMap->Signs )FStreetMapSign();
+			NewSign.OSM_ID = NodeMapHashPair.Key;
+			NewSign.Position = GetTransversemercProjection(OSMNode.Latitude, OSMNode.Longitude, NewLatLonOrigin.X, NewLatLonOrigin.Y);
+			NewSign.SignValue = OSMNode.Type;
+			NewSign.MaxSpeed = OSMNode.MaxSpeed;
+		}
 	}
 
 	// Validation test: Make sure that all roads have at least two nodes referencing them, one at the beginning and

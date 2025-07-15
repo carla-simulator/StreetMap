@@ -120,6 +120,13 @@ bool FOSMFile::ProcessElement( const TCHAR* ElementName, const TCHAR* ElementDat
 			ParsingState = ParsingState::Way_Tag;
 		}
 	}
+	else if (ParsingState == ParsingState::Node)
+	{
+		if( !FCString::Stricmp( ElementName, TEXT( "tag" ) ) )
+		{
+			ParsingState = ParsingState::Node_Tag;
+		}
+	}
 
 	return true;
 }
@@ -367,6 +374,25 @@ bool FOSMFile::ProcessAttribute( const TCHAR* AttributeName, const TCHAR* Attrib
 			}
 		}
 	}
+	else if(ParsingState == ParsingState::Node_Tag)
+	{
+		if( !FCString::Stricmp( AttributeName, TEXT( "k" ) ) )
+		{
+			CurrentNodeTagKey = AttributeValue;
+		}
+		else if( !FCString::Stricmp( AttributeName, TEXT( "v" ) ) )
+		{
+			if( !FCString::Stricmp( CurrentNodeTagKey, TEXT( "highway" ) )  ||
+				!FCString::Stricmp( CurrentNodeTagKey, TEXT( "traffic_sign" ) ))
+			{
+				CurrentNodeInfo->Type = AttributeValue;
+			}
+			else if ( !FCString::Stricmp( CurrentNodeTagKey, TEXT( "maxspeed" ) ) )
+			{
+				CurrentNodeInfo->MaxSpeed = FPlatformString::Atoi64(AttributeValue);
+			}
+		}
+	}
 
 	return true;
 }
@@ -397,6 +423,11 @@ bool FOSMFile::ProcessClose( const TCHAR* Element )
 	{
 		CurrentWayTagKey = TEXT( "" );
 		ParsingState = ParsingState::Way;
+	}
+	else if (ParsingState == ParsingState::Node_Tag)
+	{
+		CurrentNodeTagKey = TEXT("");
+		ParsingState = ParsingState::Node;
 	}
 
 	return true;
