@@ -376,6 +376,16 @@ bool FOSMFile::ProcessAttribute( const TCHAR* AttributeName, const TCHAR* Attrib
 					CurrentWayInfo->bIsOneWay = false;
 				}
 			}
+			else if( !FCString::Stricmp( CurrentWayTagKey, TEXT( "natural" ) ) )
+			{
+				CurrentWayInfo->Name = AttributeValue;
+				CurrentWayInfo->WayType = EOSMWayType::TerrainType;
+			}
+			else if( !FCString::Stricmp( CurrentWayTagKey, TEXT( "landuse" ) ) )
+			{
+				CurrentWayInfo->Name = AttributeValue;
+				CurrentWayInfo->WayType = EOSMWayType::TerrainType;
+			}
 		}
 	}
 	else if(ParsingState == ParsingState::Node_Tag)
