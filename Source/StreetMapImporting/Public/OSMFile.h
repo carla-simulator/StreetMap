@@ -130,7 +130,8 @@ public:
 		/** Default type of building.  A general catch-all. */
 		Building,
 
-
+		/*Terrains types*/
+		TerrainType,
 		///
 		/// UNSUPPORTED
 		/// 

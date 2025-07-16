@@ -144,6 +144,9 @@ enum EStreetMapRoadType
 	/** Highway */
 	Highway,
 	
+	/** Highway */
+	Terrain,
+	
 	/** Other (path, bus route, etc) */
 	Other,
 };
@@ -341,6 +344,22 @@ struct STREETMAPRUNTIME_API FStreetMapMisc
 };
 
 
+/** A road */
+USTRUCT( BlueprintType )
+struct STREETMAPRUNTIME_API FStreetMapTerrain
+{
+	GENERATED_USTRUCT_BODY()
+
+	/** Name of the road */
+	UPROPERTY( Category=StreetMap, EditAnywhere )
+	FString TerrainType;
+	
+	/** List of all of the points on this road, one for each node in the NodeIndices list */
+	UPROPERTY( Category=StreetMap, EditAnywhere )
+	TArray<FVector2D> RoadPoints;
+	
+};
+
 
 /** A loaded street map */
 UCLASS( Blueprintable, BlueprintType )
@@ -415,6 +434,12 @@ public:
 		return Trees;
 	}
 
+	/** Get All terrains */
+	const TArray<FStreetMapTerrain>& GetTerrains() const
+	{
+		return Terrains;
+	}
+
 
 
 	/** Gets the bounding box of the map */
@@ -454,6 +479,10 @@ protected:
 	UPROPERTY( Category=StreetMap, VisibleAnywhere, BlueprintReadOnly )
 	TArray<FStreetMapMisc> Amenities;
 
+	/** List of all Terrain  on the street map */
+	UPROPERTY( Category=StreetMap, VisibleAnywhere, BlueprintReadOnly )
+	TArray<FStreetMapTerrain> Terrains;
+	
 	/** 2D bounds (min) of this map's roads and buildings */
 	UPROPERTY( Category=StreetMap, VisibleAnywhere)
 	FVector2D BoundsMin;

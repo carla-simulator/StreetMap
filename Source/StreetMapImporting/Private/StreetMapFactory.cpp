@@ -197,7 +197,55 @@ bool UStreetMapFactory::LoadFromOpenStreetMapXMLFile( UStreetMap* StreetMap, FSt
 				// @todo: Log this for the user as an import warning
 			}
 		}
+		else
+		{
+			if( OSMWay.WayType == FOSMFile::EOSMWayType::TerrainType)
+			{
+				FStreetMapTerrain& NewRoad = *new( StreetMapRef.Terrains )FStreetMapTerrain();
+				NewRoad.RoadPoints.AddUninitialized( OSMWay.Nodes.Num() );
+				int32 CurRoadPoint = 0;
+				NewRoad.TerrainType = OSMWay.Name;
 
+				FVector2D BoundsMin(TNumericLimits<float>::Max(), TNumericLimits<float>::Max());
+				FVector2D BoundsMax(TNumericLimits<float>::Lowest(), TNumericLimits<float>::Lowest());
+
+				for( const FOSMFile::FOSMNodeInfo* OSMNodePtr : OSMWay.Nodes )
+				{
+					const FOSMFile::FOSMNodeInfo& OSMNode = *OSMNodePtr;
+
+					// Transform all points relative to the center of the latitude/longitude bounds, so that
+					// we get as much precision as possible.
+					const double RelativeToLatitude = OSMFile.AverageLatitude;
+					const double RelativeToLongitude = OSMFile.AverageLongitude;
+					const FVector2D NodePos = GetTransversemercProjection( OSMNode.Latitude,
+						OSMNode.Longitude, NewLatLonOrigin.X, NewLatLonOrigin.Y );
+
+					// Update bounding box
+					{
+						if( NodePos.X < BoundsMin.X )
+						{
+							BoundsMin.X = NodePos.X;
+						}
+						if( NodePos.Y < BoundsMin.Y )
+						{
+							BoundsMin.Y = NodePos.Y;
+						}
+						if( NodePos.X > BoundsMax.X )
+						{
+							BoundsMax.X = NodePos.X;
+						}
+						if( NodePos.Y > BoundsMax.Y )
+						{
+							BoundsMax.Y = NodePos.Y;
+						}
+					}
+
+					// Fill in the points
+					NewRoad.RoadPoints[ CurRoadPoint++ ] = NodePos;
+				}
+			}
+		}
+		
 		return false;
 	};
 
