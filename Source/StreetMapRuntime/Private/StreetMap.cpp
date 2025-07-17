@@ -5,6 +5,7 @@
 #include "EditorFramework/AssetImportData.h"
 #include "Components/SplineComponent.h"
 
+DEFINE_LOG_CATEGORY(LogStreetMapObject);
 
 UStreetMap::UStreetMap()
 {
@@ -32,6 +33,18 @@ void UStreetMap::GetAssetRegistryTags( TArray<FAssetRegistryTag>& OutTags ) cons
 
 void UStreetMap::SpawnTaggedTerrainSplines(UWorld* World)
 {
+	if( World == nullptr )
+	{
+		UE_LOG(LogStreetMapObject, Warning, TEXT("World is null or no terrains available to spawn splines."));
+		return;
+	}
+
+	if( Terrains.Num() == 0 )
+	{
+		UE_LOG(LogStreetMapObject, Warning, TEXT("No terrains available to spawn splines."));
+		return;
+	}
+
 	int index = 0;
 	for ( const FStreetMapTerrain& Terrain : Terrains )
 	{

@@ -4,6 +4,7 @@
 
 #include "StreetMap.generated.h"
 
+DECLARE_LOG_CATEGORY_EXTERN(LogStreetMapObject, Log, All);
 
 USTRUCT(BlueprintType)
 struct STREETMAPRUNTIME_API FStreetMapCollisionSettings
