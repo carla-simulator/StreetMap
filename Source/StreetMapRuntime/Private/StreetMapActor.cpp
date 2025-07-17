@@ -5,6 +5,7 @@
 #include "StreetMapComponent.h"
 
 
+
 AStreetMapActor::AStreetMapActor(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
@@ -24,4 +25,14 @@ TArray<AActor*> AStreetMapActor::GenerateTopOfBuildings(FString MapName, UMateri
 AActor* AStreetMapActor::GenerateTopOfBuilding(int Index, FString MapName, UMaterialInstance* MaterialInstance)
 {
 	return StreetMapComponent->GenerateTopOfBuilding(Index, MapName, MaterialInstance);
+}
+
+void AStreetMapActor::SpawnTaggedTerrainSplines()
+{
+	if(StreetMapComponent == nullptr || StreetMapComponent->GetStreetMap() == nullptr)
+	{
+		UE_LOG(LogStreetMapObject, Warning, TEXT("StreetMapComponent or StreetMap is not set. Cannot spawn tagged terrain splines."));
+		return;
+	}
+	StreetMapComponent->GetStreetMap()->SpawnTaggedTerrainSplines(GetWorld());
 }
