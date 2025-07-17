@@ -25,3 +25,8 @@ AActor* AStreetMapActor::GenerateTopOfBuilding(int Index, FString MapName, UMate
 {
 	return StreetMapComponent->GenerateTopOfBuilding(Index, MapName, MaterialInstance);
 }
+
+void AStreetMapActor::SpawnTaggedTerrainSplines()
+{
+	StreetMapComponent->GetStreetMap()->SpawnTaggedTerrainSplines(GetWorld());
+}

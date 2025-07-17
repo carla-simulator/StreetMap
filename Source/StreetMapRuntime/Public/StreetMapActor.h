@@ -22,8 +22,11 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetNewStreetMap(UStreetMap* NewMap);
 
-  UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable)
 	TArray<AActor*> GenerateTopOfBuildings(FString MapName, UMaterialInstance* MaterialInstance);
-  UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable)
 	AActor* GenerateTopOfBuilding(int Index, FString MapName, UMaterialInstance* MaterialInstance);
+	
+	UFUNCTION(BlueprintCallable)
+	void SpawnTaggedTerrainSplines();
 };

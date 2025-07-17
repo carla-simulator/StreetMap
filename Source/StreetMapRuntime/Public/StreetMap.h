@@ -440,18 +440,21 @@ public:
 		return Terrains;
 	}
 
-
-
 	/** Gets the bounding box of the map */
+	UFUNCTION( BlueprintCallable, Category = "StreetMap" )
 	FVector2D GetBoundsMin() const
 	{
 		return BoundsMin;
 	}
+	
+	UFUNCTION( BlueprintCallable, Category = "StreetMap" )
 	FVector2D GetBoundsMax() const
 	{
 		return BoundsMax;
 	}
 
+	UFUNCTION( BlueprintCallable, Category = "StreetMap" )
+	void SpawnTaggedTerrainSplines(UWorld* World);
 
 protected:
 	
