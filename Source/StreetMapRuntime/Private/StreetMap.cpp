@@ -41,12 +41,13 @@ void UStreetMap::SpawnTaggedTerrainSplines(UWorld* World)
 		}
 
 		FVector2D StartLocation = Terrain.RoadPoints[0];
-		AActor* TerrainActor = World->SpawnActor<AActor>(AActor::StaticClass(), FVector::ZeroVector, FRotator::ZeroRotator);
+		AActor* TerrainActor = World->SpawnActor<AActor>(AActor::StaticClass(), FVector(StartLocation,0), FRotator::ZeroRotator);
 		USplineComponent* SplineComponent = NewObject<USplineComponent>(TerrainActor);
 		FString LabelName = FString::Printf(TEXT("%s_%d"), *Terrain.TerrainType, index);
 		TerrainActor->SetActorLabel(LabelName);
 		TerrainActor->SetRootComponent(SplineComponent);
 		SplineComponent->RegisterComponent();
+		TerrainActor->SetActorLocation(FVector(StartLocation, 0.0f)); // Assuming Z=0 for flat terrain
 		TerrainActor->Tags.Add(FName(*Terrain.TerrainType));
 		SplineComponent->SetClosedLoop(false);
 		SplineComponent->ClearSplinePoints();
