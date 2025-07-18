@@ -27,12 +27,12 @@ AActor* AStreetMapActor::GenerateTopOfBuilding(int Index, FString MapName, UMate
 	return StreetMapComponent->GenerateTopOfBuilding(Index, MapName, MaterialInstance);
 }
 
-void AStreetMapActor::SpawnTaggedTerrainSplines()
+TArray<USplineComponent*> AStreetMapActor::SpawnTaggedTerrainSplines()
 {
 	if(StreetMapComponent == nullptr || StreetMapComponent->GetStreetMap() == nullptr)
 	{
 		UE_LOG(LogStreetMapObject, Warning, TEXT("StreetMapComponent or StreetMap is not set. Cannot spawn tagged terrain splines."));
-		return;
+		return TArray<USplineComponent*>();
 	}
-	StreetMapComponent->GetStreetMap()->SpawnTaggedTerrainSplines(GetWorld());
+	return StreetMapComponent->GetStreetMap()->SpawnTaggedTerrainSplines(GetWorld());
 }

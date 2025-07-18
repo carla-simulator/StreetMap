@@ -455,7 +455,7 @@ public:
 	}
 
 	UFUNCTION( BlueprintCallable, Category = "StreetMap" )
-	void SpawnTaggedTerrainSplines(UWorld* World);
+	TArray<USplineComponent*> SpawnTaggedTerrainSplines(UWorld* World);
 
 protected:
 	

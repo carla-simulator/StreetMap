@@ -28,5 +28,5 @@ public:
 	AActor* GenerateTopOfBuilding(int Index, FString MapName, UMaterialInstance* MaterialInstance);
 	
 	UFUNCTION(BlueprintCallable)
-	void SpawnTaggedTerrainSplines();
+	TArray<USplineComponent*> SpawnTaggedTerrainSplines();
 };
