@@ -31,18 +31,19 @@ void UStreetMap::GetAssetRegistryTags( TArray<FAssetRegistryTag>& OutTags ) cons
 }
 
 
-void UStreetMap::SpawnTaggedTerrainSplines(UWorld* World)
+TArray<USplineComponent*> UStreetMap::SpawnTaggedTerrainSplines(UWorld* World)
 {
+	TArray<USplineComponent*> Result;
 	if( World == nullptr )
 	{
 		UE_LOG(LogStreetMapObject, Warning, TEXT("World is null or no terrains available to spawn splines."));
-		return;
+		return TArray<USplineComponent*>();
 	}
 
 	if( Terrains.Num() == 0 )
 	{
 		UE_LOG(LogStreetMapObject, Warning, TEXT("No terrains available to spawn splines."));
-		return;
+		return TArray<USplineComponent*>();
 	}
 
 	int index = 0;
@@ -77,5 +78,7 @@ void UStreetMap::SpawnTaggedTerrainSplines(UWorld* World)
 			SplineComponent->SetSplinePointType(i, ESplinePointType::Curve, false);
 		}
 		index++;
+		Result.Add(SplineComponent);
 	}
+	return Result;
 }
