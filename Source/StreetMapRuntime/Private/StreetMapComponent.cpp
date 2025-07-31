@@ -11,6 +11,7 @@
 
 #include "PhysicsEngine/BodySetup.h"
 #include "ProceduralMeshComponent.h"
+#include "Generation/DynamicMeshGeneration.h"
 
 #include "Generation/MapGenFunctionLibrary.h"
 
@@ -652,9 +653,9 @@ FString UStreetMapComponent::GetStreetMapAssetName() const
   return StreetMap != nullptr ? StreetMap->GetName() : FString(TEXT("NONE"));
 }
 
-TArray<AActor*> UStreetMapComponent::GenerateTopsOfBuildings(FString MapName, UMaterialInstance* MaterialInstance)
+TArray<UStaticMesh*> UStreetMapComponent::GenerateTopsOfBuildings(FString MapName, UMaterialInstance* MaterialInstance)
 {
-  TArray<AActor*> Returning;
+  TArray<UStaticMesh*> Returning;
   const float BuildingLevelFloorFactor = MeshBuildSettings.BuildingLevelFloorFactor;
   auto& Buildings = StreetMap->GetBuildings();
   for( int32 BuildingIndex = 0; BuildingIndex < Buildings.Num(); ++BuildingIndex )
@@ -665,101 +666,26 @@ TArray<AActor*> UStreetMapComponent::GenerateTopsOfBuildings(FString MapName, UM
   return Returning;
 }
 
-AActor* UStreetMapComponent::GenerateTopOfBuilding(int Index, FString MapName, UMaterialInstance* MaterialInstance)
+UStaticMesh* UStreetMapComponent::GenerateTopOfBuilding(int Index, FString MapName, UMaterialInstance* MaterialInstance)
 {
   const float BuildingLevelFloorFactor = MeshBuildSettings.BuildingLevelFloorFactor;
-  auto& Buildings = StreetMap->GetBuildings();
+  const TArray<FStreetMapBuilding>& Buildings = StreetMap->GetBuildings();
 
-  auto& Building = Buildings[ Index ];
-  AStaticMeshActor* TempActor = GetWorld()->SpawnActor<AStaticMeshActor>();
-  UStaticMeshComponent* StaticMeshComponent = TempActor->GetStaticMeshComponent();
+  const FStreetMapBuilding& Building = Buildings[ Index ];
 
-  TempActor->SetActorLabel(FString("SM_Roof_") + FString::FromInt(Index));
-  StaticMeshComponent->CastShadow = false;
-
-  TArray<FVector> BPositions;
-  TArray<FVector> BNormals;
-  TArray<int32> BIndices;
-  TArray<int32> TempIndices;
-  TArray<int32> TriangulatedVertexIndices;
-  TArray<FVector> TempPoints;
-  // Building mesh (or filled area, if the building has no height)
-
-  // Triangulate this building
-  // @todo: Performance: Triangulating lots of building polygons is quite slow.  We could easily do this
-  //        as part of the import process and store tessellated geometry instead of doing this at load time.
-  bool WindsClockwise;
-  if( FPolygonTools::TriangulatePolygon( Building.BuildingPoints, TempIndices, /* Out */ TriangulatedVertexIndices, /* Out */ WindsClockwise ) )
+  TArray<FVector> Points3D;
+  for(FVector2D Point : Building.BuildingPoints)
   {
-    const int32 FirstTopVertexIndex = this->Vertices.Num();
-
-    // calculate fill Z for buildings
-    // either use the defined height or extrapolate from building level count
-    float BuildingFillZ = 0.0f;
-    if (Building.Height > 0) {
-      BuildingFillZ = Building.Height;
-    }
-    else if (Building.BuildingLevels > 0) {
-      BuildingFillZ = (float)Building.BuildingLevels * BuildingLevelFloorFactor;
-    }
-    else {
-      Building.Height = FMath::RandRange(2, 7) * BuildingLevelFloorFactor;
-      BuildingFillZ = Building.Height;
-    }
-
-    // Top of building
-    {
-      TempPoints.SetNum( Building.BuildingPoints.Num(), false );
-      for( int32 PointIndex = 0; PointIndex < Building.BuildingPoints.Num(); ++PointIndex )
-      {
-        TempPoints[ PointIndex ] = FVector( Building.BuildingPoints[ ( Building.BuildingPoints.Num() - PointIndex ) - 1 ], BuildingFillZ );
-      }
-
-      if(!WindsClockwise){
-        for( int32 PointIndex = 0; PointIndex < Building.BuildingPoints.Num(); PointIndex++ )
-        {
-          BPositions.Add( FVector(Building.BuildingPoints[PointIndex], BuildingFillZ) );
-          BNormals.Add(FVector::UpVector);
-        }
-      }
-      else
-      {
-        for( int32 PointIndex = 0; PointIndex < Building.BuildingPoints.Num(); PointIndex++ )
-        {
-          int RealIndex = ( Building.BuildingPoints.Num() - 1 ) - PointIndex;
-          BPositions.Add( FVector(Building.BuildingPoints[RealIndex], BuildingFillZ) );
-          BNormals.Add(FVector::UpVector);
-        }
-      }
-      for( int32 PointIndex : TriangulatedVertexIndices )
-      {
-        BIndices.Add( PointIndex );
-      }
-    }
-
-    FVector MeshCentroid = FVector(0,0,0);
-    for( const auto& Vertex : BPositions )
-    {
-      MeshCentroid += Vertex;
-    }
-
-    MeshCentroid /= BPositions.Num();
-
-    for( auto& Vertex : BPositions )
-    {
-      Vertex.X -= MeshCentroid.X;
-      Vertex.Y -= MeshCentroid.Y;
-      Vertex.Z -= MeshCentroid.Z;
-    }
-    FProceduralCustomMesh MeshData;
-    MeshData.Vertices = BPositions;
-    MeshData.Triangles = BIndices;
-    MeshData.Normals = BNormals;
-    TArray<FProcMeshTangent> Tangents;
-    UStaticMesh* MeshToSet = UMapGenFunctionLibrary::CreateMesh(MeshData,  Tangents, MaterialInstance, MapName, "Roofs", FName(TEXT("SM_RoofMesh" + FString::FromInt(Index) )));
-
-    StaticMeshComponent->SetStaticMesh(MeshToSet);
-    TempActor->SetActorLocation( MeshCentroid );
+    Points3D.Add(FVector(Point, Building.Height > 0 ? Building.Height : (Building.BuildingLevels > 0 ? Building.BuildingLevels * BuildingLevelFloorFactor : FMath::RandRange(2, 7) * BuildingLevelFloorFactor)));
   }
-  return TempActor;
+  FVector Offset = Points3D[0];
+  Offset.Z = 0;
+  UStaticMesh* MeshToSet = UDynamicMeshGeneration::CreateMeshFromPoints(
+    Points3D,
+    FName(TEXT("SM_TopOfBuilding" + FString::FromInt(Index) )),
+    "/" + MapName + "/Static/Building/Roofs/" , 
+    false,
+    -Offset);
+  MeshToSet->SetMaterial(0, MaterialInstance);
+  return MeshToSet;
 }
