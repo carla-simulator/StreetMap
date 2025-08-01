@@ -23,9 +23,9 @@ public:
 	void SetNewStreetMap(UStreetMap* NewMap);
 
 	UFUNCTION(BlueprintCallable)
-	TArray<AActor*> GenerateTopOfBuildings(FString MapName, UMaterialInstance* MaterialInstance);
+	TArray<UStaticMesh*> GenerateTopOfBuildings(FString MapName, UMaterialInstance* MaterialInstance);
 	UFUNCTION(BlueprintCallable)
-	AActor* GenerateTopOfBuilding(int Index, FString MapName, UMaterialInstance* MaterialInstance);
+	UStaticMesh* GenerateTopOfBuilding(int Index, FString MapName, UMaterialInstance* MaterialInstance);
 	
 	UFUNCTION(BlueprintCallable)
 	TArray<USplineComponent*> SpawnTaggedTerrainSplines();

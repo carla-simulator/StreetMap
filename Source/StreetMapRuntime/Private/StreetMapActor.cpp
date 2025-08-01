@@ -17,12 +17,12 @@ void AStreetMapActor::SetNewStreetMap(UStreetMap* NewMap){
 	StreetMapComponent->SetStreetMap(NewMap);
 }
 
-TArray<AActor*> AStreetMapActor::GenerateTopOfBuildings(FString MapName, UMaterialInstance* MaterialInstance)
+TArray<UStaticMesh*> AStreetMapActor::GenerateTopOfBuildings(FString MapName, UMaterialInstance* MaterialInstance)
 {
 	return StreetMapComponent->GenerateTopsOfBuildings(MapName, MaterialInstance);
 }
 
-AActor* AStreetMapActor::GenerateTopOfBuilding(int Index, FString MapName, UMaterialInstance* MaterialInstance)
+UStaticMesh* AStreetMapActor::GenerateTopOfBuilding(int Index, FString MapName, UMaterialInstance* MaterialInstance)
 {
 	return StreetMapComponent->GenerateTopOfBuilding(Index, MapName, MaterialInstance);
 }
