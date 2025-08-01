@@ -671,6 +671,12 @@ UStaticMesh* UStreetMapComponent::GenerateTopOfBuilding(int Index, FString MapNa
   const float BuildingLevelFloorFactor = MeshBuildSettings.BuildingLevelFloorFactor;
   const TArray<FStreetMapBuilding>& Buildings = StreetMap->GetBuildings();
 
+  if( Index < 0 || Index >= Buildings.Num() )
+  {
+    UE_LOG(LogNoriega, Warning, TEXT("Invalid building index %d for generating top of building."), Index);
+    return nullptr;
+  }
+
   const FStreetMapBuilding& Building = Buildings[ Index ];
 
   TArray<FVector> Points3D;
