@@ -8,7 +8,7 @@ namespace UnrealBuildTool.Rules
     : base(Target)
     {
       PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
-      PublicDependencyModuleNames.AddRange(new string[] { "CarlaMeshGeneration" });
+
       PrivateDependencyModuleNames.AddRange(
         new string[] {
           "Core",
@@ -30,7 +30,8 @@ namespace UnrealBuildTool.Rules
           "RawMesh",
           "AssetTools",
           "AssetRegistry",
-          "StreetMapRuntime"
+          "StreetMapRuntime",
+          "CarlaMeshGeneration"
         }
       );
 
