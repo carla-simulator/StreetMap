@@ -457,6 +457,29 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "StreetMap" )
 	TArray<USplineComponent*> SpawnTaggedTerrainSplines(UWorld* World);
 
+	inline const TArray<FString>& GetTerrainSupportedTypes()
+	{
+		static const TArray<FString> Types = {
+			TEXT("allotments"),
+			TEXT("animal_keeping"),
+			TEXT("farmland"),
+			TEXT("farmyard"),
+			TEXT("flowerbed"),
+			TEXT("forest"),
+			TEXT("forestry"),
+			TEXT("grass"),
+			TEXT("grassland"),
+			TEXT("logging"),
+			TEXT("meadow"),
+			TEXT("orchard"),
+			TEXT("peat_cutting"),
+			TEXT("reservoir_watershed"),
+			TEXT("vineyard"),
+			TEXT("scrub")
+		};
+		return Types;
+	}
+
 protected:
 	
 	/** List of roads */

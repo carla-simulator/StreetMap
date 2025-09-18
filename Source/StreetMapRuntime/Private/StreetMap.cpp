@@ -57,12 +57,26 @@ TArray<USplineComponent*> UStreetMap::SpawnTaggedTerrainSplines(UWorld* World)
 		FVector2D StartLocation = Terrain.RoadPoints[0];
 		AActor* TerrainActor = World->SpawnActor<AActor>(AActor::StaticClass(), FVector(StartLocation,0), FRotator::ZeroRotator);
 		USplineComponent* SplineComponent = NewObject<USplineComponent>(TerrainActor);
+
 		FString LabelName = FString::Printf(TEXT("%s_%d"), *Terrain.TerrainType, index);
+
+		if( GetTerrainSupportedTypes().Contains(Terrain.TerrainType)){
+			LabelName = FString::Printf(TEXT("VegetationContainer_%d"), index);
+		}
+
 		TerrainActor->SetActorLabel(LabelName);
 		TerrainActor->SetRootComponent(SplineComponent);
 		SplineComponent->RegisterComponent();
 		TerrainActor->SetActorLocation(FVector(StartLocation, 0.0f)); // Assuming Z=0 for flat terrain
-		TerrainActor->Tags.Add(FName(*Terrain.TerrainType));
+		if( GetTerrainSupportedTypes().Contains(Terrain.TerrainType) )
+		{
+			TerrainActor->Tags.Add(FName("VegetationContainer"));
+		}
+		else
+		{
+			TerrainActor->Tags.Add(FName(*Terrain.TerrainType));
+		}
+		
 		SplineComponent->SetClosedLoop(false);
 		SplineComponent->ClearSplinePoints();
 		SplineComponent->UpdateSpline();
@@ -78,6 +92,7 @@ TArray<USplineComponent*> UStreetMap::SpawnTaggedTerrainSplines(UWorld* World)
 			SplineComponent->SetSplinePointType(i, ESplinePointType::Curve, false);
 		}
 		index++;
+		SplineComponent->ComponentTags.Add(FName(*Terrain.TerrainType));
 		Result.Add(SplineComponent);
 	}
 	return Result;
