@@ -71,13 +71,15 @@ TArray<USplineComponent*> UStreetMap::SpawnTaggedTerrainSplines(UWorld* World)
 		if( GetTerrainSupportedTypes().Contains(Terrain.TerrainType) )
 		{
 			TerrainActor->Tags.Add(FName("VegetationContainer"));
+			SplineComponent->SetClosedLoop(true);
 		}
 		else
 		{
 			TerrainActor->Tags.Add(FName(*Terrain.TerrainType));
+			SplineComponent->SetClosedLoop(false);
 		}
 		
-		SplineComponent->SetClosedLoop(false);
+		
 		SplineComponent->ClearSplinePoints();
 		SplineComponent->UpdateSpline();
 
