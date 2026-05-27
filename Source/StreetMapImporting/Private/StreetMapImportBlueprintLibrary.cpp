@@ -7,6 +7,8 @@
 #include "StreetMapImportBlueprintLibrary.h"
 #include "StreetMapFactory.h"
 #include "StreetMap.h"
+#include "StreetMapImporting.h"
+#include "AssetToolsModule.h"
 #include "Engine/AssetManager.h"
 
 #if ENGINE_MAJOR_VERSION > 4
