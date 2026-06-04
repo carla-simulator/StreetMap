@@ -3,6 +3,7 @@
 #include "StreetMapComponentDetails.h"
 #include "StreetMapImporting.h"
 
+#include "AssetToolsModule.h"
 #include "SlateBasics.h"
 #include "RawMesh.h"
 #include "PropertyEditorModule.h"
