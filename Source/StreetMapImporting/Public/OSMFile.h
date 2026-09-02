@@ -130,7 +130,8 @@ public:
 		/** Default type of building.  A general catch-all. */
 		Building,
 
-
+		/*Terrains types*/
+		TerrainType,
 		///
 		/// UNSUPPORTED
 		/// 
@@ -139,6 +140,24 @@ public:
 		Other,
 	};
 
+	enum class EOSSignType 
+	{
+		Crossing,
+		Max_Speed,
+		Traffic_Lights,
+		Give_Way,
+		Stop,
+		Bus_Stop,
+		Other,
+	};
+
+	enum class EOSMNodeType
+	{
+		Invalid,
+		TrafficSign,
+		Natural,
+		Amenity
+	};
 
 	struct FOSMWayRef
 	{
@@ -148,13 +167,19 @@ public:
 		// Index of the node in the way's array of nodes
 		int32 NodeIndex;
 	};
-		
+	
+
 		
 	struct FOSMNodeInfo
 	{
 		double Latitude;
 		double Longitude;
 		TArray<FOSMWayRef> WayRefs;
+		FString Type;
+		EOSMNodeType NodeType;
+		TMap<FString, FString> KeyValues;
+		//EOSSignType;
+		int MaxSpeed;
 	};
 		
 		
@@ -165,6 +190,7 @@ public:
 		FString Category;
 		TArray<FOSMNodeInfo*> Nodes;
 		EOSMWayType WayType;
+		FString MaxSpeed;
 		double Height;
 		int32 BuildingLevels;
 
@@ -206,7 +232,8 @@ protected:
 		Node,
 		Way,
 		Way_NodeRef,
-		Way_Tag
+		Way_Tag,
+		Node_Tag
 	};
 		
 	// Current state of parser
@@ -223,6 +250,7 @@ protected:
 		
 	// Current way's tag key string
 	const TCHAR* CurrentWayTagKey;
+
+	// Current way's tag key string
+	const TCHAR* CurrentNodeTagKey;
 };
-
-

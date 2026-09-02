@@ -176,6 +176,19 @@ bool UStreetMapFactory::LoadFromOpenStreetMapXMLFile( UStreetMap* StreetMap, FSt
 				StreetMapRef.BoundsMax.X = FMath::Max( StreetMapRef.BoundsMax.X, BoundsMax.X );
 				StreetMapRef.BoundsMax.Y = FMath::Max( StreetMapRef.BoundsMax.Y, BoundsMax.Y );
 
+				if (!OSMWay.MaxSpeed.IsEmpty())
+				{
+					FStreetMapMisc& NewSpeedSign = *new( StreetMapRef.Signs )FStreetMapMisc();
+
+					NewSpeedSign.Type = EStreetMapNodeType::TrafficSign;
+					NewSpeedSign.Properties.Add(TEXT("maxspeed"), OSMWay.MaxSpeed);
+
+					int32 MidIndex = NewRoad.RoadPoints.Num() / 2;
+					NewSpeedSign.Position = NewRoad.RoadPoints.IsValidIndex(MidIndex) 
+						? NewRoad.RoadPoints[MidIndex]
+						: FVector2D::ZeroVector;
+				}
+
 				return true;
 			}
 			else
@@ -184,7 +197,55 @@ bool UStreetMapFactory::LoadFromOpenStreetMapXMLFile( UStreetMap* StreetMap, FSt
 				// @todo: Log this for the user as an import warning
 			}
 		}
+		else
+		{
+			if( OSMWay.WayType == FOSMFile::EOSMWayType::TerrainType)
+			{
+				FStreetMapTerrain& NewRoad = *new( StreetMapRef.Terrains )FStreetMapTerrain();
+				NewRoad.RoadPoints.AddUninitialized( OSMWay.Nodes.Num() );
+				int32 CurRoadPoint = 0;
+				NewRoad.TerrainType = OSMWay.Name;
 
+				FVector2D BoundsMin(TNumericLimits<float>::Max(), TNumericLimits<float>::Max());
+				FVector2D BoundsMax(TNumericLimits<float>::Lowest(), TNumericLimits<float>::Lowest());
+
+				for( const FOSMFile::FOSMNodeInfo* OSMNodePtr : OSMWay.Nodes )
+				{
+					const FOSMFile::FOSMNodeInfo& OSMNode = *OSMNodePtr;
+
+					// Transform all points relative to the center of the latitude/longitude bounds, so that
+					// we get as much precision as possible.
+					const double RelativeToLatitude = OSMFile.AverageLatitude;
+					const double RelativeToLongitude = OSMFile.AverageLongitude;
+					const FVector2D NodePos = GetTransversemercProjection( OSMNode.Latitude,
+						OSMNode.Longitude, NewLatLonOrigin.X, NewLatLonOrigin.Y );
+
+					// Update bounding box
+					{
+						if( NodePos.X < BoundsMin.X )
+						{
+							BoundsMin.X = NodePos.X;
+						}
+						if( NodePos.Y < BoundsMin.Y )
+						{
+							BoundsMin.Y = NodePos.Y;
+						}
+						if( NodePos.X > BoundsMax.X )
+						{
+							BoundsMax.X = NodePos.X;
+						}
+						if( NodePos.Y > BoundsMax.Y )
+						{
+							BoundsMax.Y = NodePos.Y;
+						}
+					}
+
+					// Fill in the points
+					NewRoad.RoadPoints[ CurRoadPoint++ ] = NodePos;
+				}
+			}
+		}
+		
 		return false;
 	};
 
@@ -329,6 +390,7 @@ bool UStreetMapFactory::LoadFromOpenStreetMapXMLFile( UStreetMap* StreetMap, FSt
 		}
 	}
 
+	int32 TaggedNodeCount = 0;
 	for( const auto& NodeMapHashPair : OSMFile.NodeMap )
 	{
 		const FOSMFile::FOSMNodeInfo& OSMNode = *NodeMapHashPair.Value;
@@ -397,7 +459,45 @@ bool UStreetMapFactory::LoadFromOpenStreetMapXMLFile( UStreetMap* StreetMap, FSt
 				// Node doesn't reference any roads that we kept, or the data was malformed.  Filter it out.
 			}
 		}
+	
+		//Adding Signs
+		if (OSMNode.KeyValues.Num() > 0)
+		{
+			TaggedNodeCount++;
+		}
+		if (OSMNode.NodeType == FOSMFile::EOSMNodeType::TrafficSign)
+		{
+			// Add the sign to the street map
+			FStreetMapMisc& NewSign = *new( StreetMap->Signs )FStreetMapMisc();
+			NewSign.OSM_ID = NodeMapHashPair.Key;
+			NewSign.Position = GetTransversemercProjection(OSMNode.Latitude, OSMNode.Longitude, NewLatLonOrigin.X, NewLatLonOrigin.Y);
+			NewSign.Type = EStreetMapNodeType::TrafficSign;
+			NewSign.Properties = OSMNode.KeyValues;
+		}
+		else if (OSMNode.NodeType == FOSMFile::EOSMNodeType::Natural)
+		{
+			// Add the natural feature to the street map
+			FStreetMapMisc& NewNaturalFeature = *new( StreetMap->Trees )FStreetMapMisc();
+			NewNaturalFeature.OSM_ID = NodeMapHashPair.Key;
+			NewNaturalFeature.Position = GetTransversemercProjection(OSMNode.Latitude, OSMNode.Longitude, NewLatLonOrigin.X, NewLatLonOrigin.Y);
+			NewNaturalFeature.Type = EStreetMapNodeType::Tree;
+			NewNaturalFeature.Properties = OSMNode.KeyValues;
+		}
+		else if (OSMNode.NodeType == FOSMFile::EOSMNodeType::Amenity)
+		{
+			// Add the amenity to the street map
+			FStreetMapMisc& NewAmenity = *new( StreetMap->Amenities )FStreetMapMisc();
+			NewAmenity.OSM_ID = NodeMapHashPair.Key;
+			NewAmenity.Position = GetTransversemercProjection(OSMNode.Latitude, OSMNode.Longitude, NewLatLonOrigin.X, NewLatLonOrigin.Y);
+			NewAmenity.Type = EStreetMapNodeType::Amenity;
+			NewAmenity.Properties = OSMNode.KeyValues;
+		}
+		
 	}
+
+	UE_LOG(LogStreetMapImporting, Log, TEXT("OSM nodes %d (%d tagged): %d signs, %d trees, %d amenities; %d roads, %d buildings"),
+		OSMFile.NodeMap.Num(), TaggedNodeCount, StreetMap->Signs.Num(), StreetMap->Trees.Num(), StreetMap->Amenities.Num(),
+		StreetMap->Roads.Num(), StreetMap->Buildings.Num());
 
 	// Validation test: Make sure that all roads have at least two nodes referencing them, one at the beginning and
 	// one at the end.
