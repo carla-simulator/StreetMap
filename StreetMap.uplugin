@@ -28,26 +28,29 @@
       "LoadingPhase" : "PreDefault"
     },
   ],
-  "Plugins":
-  [
+  "Plugins": [
     {
-      "Name": "GeometryProcessing",
-      "Enabled": true
+      "Name" : "GeometryProcessing",
+      "Enabled" : true
     },
 
     {
-      "Name": "ProceduralMeshComponent",
-      "Enabled": true
+      "Name" : "GeometryScripting",
+      "Enabled" : true
     },
 
     {
-      "Name": "EditorScriptingUtilities",
-      "Enabled": true
+      "Name" : "ProceduralMeshComponent",
+      "Enabled" : true
     },
 
     {
-      "Name": "CarlaMeshGeneration",
-      "Enabled": true
+      "Name" : "EditorScriptingUtilities",
+      "Enabled" : true
+    },
+    {
+      "Name" : "Carla",
+      "Enabled" : true
     }
   ]
 }

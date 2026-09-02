@@ -9,7 +9,7 @@ namespace UnrealBuildTool.Rules
     : base(Target)
     {
       PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
-
+      //PublicDependencyModuleNames.AddRange(new string[] { "Carla" });
       PrivateDependencyModuleNames.AddRange(
         new string[] {
           "Core",
@@ -19,7 +19,11 @@ namespace UnrealBuildTool.Rules
           "RenderCore",
           "PropertyEditor",
           "ProceduralMeshComponent",
-          "CarlaMeshGeneration"
+          "GeometryScriptingCore",
+          "GeometryFramework",
+          "MeshDescription",
+          "StaticMeshDescription",
+          "Carla"
         }
       );
 
@@ -29,6 +33,7 @@ namespace UnrealBuildTool.Rules
         PrivateDependencyModuleNames.Add("GeometryCore");
 
       PrivateIncludePaths.AddRange(new string[] { "StreetMapRuntime/Private" });
+
     }
   }
 }

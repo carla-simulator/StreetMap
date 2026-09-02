@@ -8,7 +8,7 @@ namespace UnrealBuildTool.Rules
     : base(Target)
     {
       PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
-
+      //PublicDependencyModuleNames.AddRange(new string[] { "" });
       PrivateDependencyModuleNames.AddRange(
         new string[] {
           "Core",
@@ -31,7 +31,7 @@ namespace UnrealBuildTool.Rules
           "AssetTools",
           "AssetRegistry",
           "StreetMapRuntime",
-          "CarlaMeshGeneration"
+          "Carla",
         }
       );
 

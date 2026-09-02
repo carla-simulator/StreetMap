@@ -22,11 +22,11 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetNewStreetMap(UStreetMap* NewMap);
 
-	UFUNCTION(BlueprintCallable)
+  UFUNCTION(BlueprintCallable)
 	TArray<UStaticMesh*> GenerateTopOfBuildings(FString MapName, UMaterialInstance* MaterialInstance);
-	UFUNCTION(BlueprintCallable)
+  UFUNCTION(BlueprintCallable)
 	UStaticMesh* GenerateTopOfBuilding(int Index, FString MapName, UMaterialInstance* MaterialInstance);
-	
+
 	UFUNCTION(BlueprintCallable)
-	TArray<USplineComponent*> SpawnTaggedTerrainSplines();
+	TArray<class USplineComponent*> SpawnTaggedTerrainSplines();
 };

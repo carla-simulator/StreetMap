@@ -4,7 +4,6 @@
 
 #include "StreetMap.generated.h"
 
-DECLARE_LOG_CATEGORY_EXTERN(LogStreetMapObject, Log, All);
 
 USTRUCT(BlueprintType)
 struct STREETMAPRUNTIME_API FStreetMapCollisionSettings
@@ -118,7 +117,13 @@ public:
 
 };
 
-/** Types of nodes */
+
+
+class USplineComponent;
+
+DECLARE_LOG_CATEGORY_EXTERN(LogStreetMapObject, Log, All);
+
+/** Types of nodes (carla-digitaltwins StreetMap fork) */
 UENUM( BlueprintType )
 enum class EStreetMapNodeType : uint8
 {
@@ -145,7 +150,7 @@ enum EStreetMapRoadType
 	/** Highway */
 	Highway,
 	
-	/** Highway */
+	/** Terrain (carla-digitaltwins StreetMap fork) */
 	Terrain,
 	
 	/** Other (path, bus route, etc) */
@@ -165,7 +170,7 @@ struct STREETMAPRUNTIME_API FStreetMapRoad
 	
 	/** Type of road */
 	UPROPERTY( Category=StreetMap, EditAnywhere )
-	TEnumAsByte<EStreetMapRoadType> RoadType = EStreetMapRoadType::Other;
+	TEnumAsByte<EStreetMapRoadType> RoadType;
 	
 	/** Nodes along this road, one at each point in the RoadPoints list */
 	UPROPERTY( Category=StreetMap, EditAnywhere )
@@ -179,11 +184,11 @@ struct STREETMAPRUNTIME_API FStreetMapRoad
 
 	/** 2D bounds (min) of this road's points */
 	UPROPERTY( Category=StreetMap, EditAnywhere )
-	FVector2D BoundsMin = FVector2D( MAX_FLT, MAX_FLT );
+	FVector2D BoundsMin;
 	
 	/** 2D bounds (max) of this road's points */
 	UPROPERTY( Category=StreetMap, EditAnywhere )
-	FVector2D BoundsMax = FVector2D( -MAX_FLT, -MAX_FLT );
+	FVector2D BoundsMax;
 
 	/** True if this node is a one way.  One way nodes are only traversable in the order the nodes are listed in the above array. */
 	UPROPERTY( Category=StreetMap, EditAnywhere )
@@ -238,11 +243,11 @@ struct STREETMAPRUNTIME_API FStreetMapRoadRef
 
 	/** Index of road in the list of all roads in this street map */
 	UPROPERTY( Category=StreetMap, EditAnywhere )
-	int32 RoadIndex = -1;
+	int32 RoadIndex;
 	
 	/** Index of the point along road where this node exists */
 	UPROPERTY( Category=StreetMap, EditAnywhere )
-	int32 RoadPointIndex = -1;
+	int32 RoadPointIndex;
 };
 
 
@@ -285,6 +290,43 @@ struct STREETMAPRUNTIME_API FStreetMapNode
 };
 
 
+/** A miscellaneous OSM node (sign, tree, amenity) - carla-digitaltwins StreetMap fork */
+USTRUCT( BlueprintType )
+struct STREETMAPRUNTIME_API FStreetMapMisc
+{
+	GENERATED_USTRUCT_BODY()
+
+	/** OSM id of the node */
+	UPROPERTY( Category=StreetMap, EditAnywhere, BlueprintReadWrite )
+	double OSM_ID = -1.0;
+
+	/** Category of the sign */
+	UPROPERTY( Category=StreetMap, EditAnywhere, BlueprintReadWrite )
+	EStreetMapNodeType Type = EStreetMapNodeType::Invalid;
+
+	/** 2D lat/lon position of the sign */
+	UPROPERTY( Category=StreetMap, EditAnywhere, BlueprintReadWrite )
+	FVector2D Position = FVector2D::ZeroVector;
+
+	UPROPERTY( Category=StreetMap, EditAnywhere, BlueprintReadWrite )
+	TMap<FString, FString> Properties;
+};
+
+/** A terrain contour - carla-digitaltwins StreetMap fork */
+USTRUCT( BlueprintType )
+struct STREETMAPRUNTIME_API FStreetMapTerrain
+{
+	GENERATED_USTRUCT_BODY()
+
+	/** Type of the terrain */
+	UPROPERTY( Category=StreetMap, EditAnywhere )
+	FString TerrainType;
+
+	/** List of all of the points on this terrain contour */
+	UPROPERTY( Category=StreetMap, EditAnywhere )
+	TArray<FVector2D> RoadPoints;
+};
+
 /** A building */
 USTRUCT( BlueprintType )
 struct STREETMAPRUNTIME_API FStreetMapBuilding
@@ -305,60 +347,21 @@ struct STREETMAPRUNTIME_API FStreetMapBuilding
 
 	/** Height of the building in meters (if known, otherwise zero) */
 	UPROPERTY( Category=StreetMap, EditAnywhere, BlueprintReadWrite )
-	float Height = 0.0f;
+	float Height;
 
 	/** Levels of the building (if known, otherwise zero) */
 	UPROPERTY(Category = StreetMap, EditAnywhere, BlueprintReadWrite )
-	int BuildingLevels = 0;
+	int BuildingLevels;
 
 	// @todo: Performance: Bounding information could be computed at load time if we want to avoid the memory cost of storing it
 
 	/** 2D bounds (min) of this building's points */
 	UPROPERTY( Category=StreetMap, EditAnywhere, BlueprintReadWrite )
-	FVector2D BoundsMin = FVector2D( MAX_FLT, MAX_FLT );
+	FVector2D BoundsMin;
 	
 	/** 2D bounds (max) of this building's points */
 	UPROPERTY( Category=StreetMap, EditAnywhere, BlueprintReadWrite )
-	FVector2D BoundsMax = FVector2D( -MAX_FLT, -MAX_FLT );
-};
-
-/** A Miscelanious */
-USTRUCT( BlueprintType )
-struct STREETMAPRUNTIME_API FStreetMapMisc
-{
-	GENERATED_USTRUCT_BODY()
-
-	/** Name of the building */
-	UPROPERTY( Category=StreetMap, EditAnywhere, BlueprintReadWrite )
-	double OSM_ID = -1.0;
-
-	/** Category of the sign */
-	UPROPERTY( Category=StreetMap, EditAnywhere, BlueprintReadWrite )
-	EStreetMapNodeType Type = EStreetMapNodeType::Invalid;
-
-	/** 2D lat/lon position of the sign */
-	UPROPERTY( Category=StreetMap, EditAnywhere, BlueprintReadWrite )
-	FVector2D Position = FVector2D::ZeroVector;
-
-	UPROPERTY( Category=StreetMap, EditAnywhere, BlueprintReadWrite )
-	TMap<FString, FString> Properties;
-};
-
-
-/** A road */
-USTRUCT( BlueprintType )
-struct STREETMAPRUNTIME_API FStreetMapTerrain
-{
-	GENERATED_USTRUCT_BODY()
-
-	/** Name of the road */
-	UPROPERTY( Category=StreetMap, EditAnywhere )
-	FString TerrainType;
-	
-	/** List of all of the points on this road, one for each node in the NodeIndices list */
-	UPROPERTY( Category=StreetMap, EditAnywhere )
-	TArray<FVector2D> RoadPoints;
-	
+	FVector2D BoundsMax;
 };
 
 
@@ -412,6 +415,7 @@ public:
 		return Buildings;
 	}
 
+	/** Gets all of the signs (read only) - carla-digitaltwins StreetMap fork */
 	const TArray<FStreetMapMisc>& GetSigns() const
 	{
 		return Signs;
@@ -435,25 +439,13 @@ public:
 		return Trees;
 	}
 
-	/** Get All terrains */
+	/** Get all terrains */
 	const TArray<FStreetMapTerrain>& GetTerrains() const
 	{
 		return Terrains;
 	}
 
-	/** Gets the bounding box of the map */
-	UFUNCTION( BlueprintCallable, Category = "StreetMap" )
-	FVector2D GetBoundsMin() const
-	{
-		return BoundsMin;
-	}
-	
-	UFUNCTION( BlueprintCallable, Category = "StreetMap" )
-	FVector2D GetBoundsMax() const
-	{
-		return BoundsMax;
-	}
-
+	/** Spawns spline actors for every tagged terrain contour */
 	UFUNCTION( BlueprintCallable, Category = "StreetMap" )
 	TArray<USplineComponent*> SpawnTaggedTerrainSplines(UWorld* World);
 
@@ -480,6 +472,17 @@ public:
 		return Types;
 	}
 
+	/** Gets the bounding box of the map */
+	FVector2D GetBoundsMin() const
+	{
+		return BoundsMin;
+	}
+	FVector2D GetBoundsMax() const
+	{
+		return BoundsMax;
+	}
+
+
 protected:
 	
 	/** List of roads */
@@ -494,7 +497,7 @@ protected:
 	UPROPERTY( Category=StreetMap, VisibleAnywhere, BlueprintReadOnly )
 	TArray<FStreetMapBuilding> Buildings;
 
-	/** List of all signs on the street map */
+	/** List of all signs on the street map (carla-digitaltwins StreetMap fork) */
 	UPROPERTY( Category=StreetMap, VisibleAnywhere, BlueprintReadOnly )
 	TArray<FStreetMapMisc> Signs;
 
@@ -506,10 +509,10 @@ protected:
 	UPROPERTY( Category=StreetMap, VisibleAnywhere, BlueprintReadOnly )
 	TArray<FStreetMapMisc> Amenities;
 
-	/** List of all Terrain  on the street map */
+	/** List of all terrain contours on the street map */
 	UPROPERTY( Category=StreetMap, VisibleAnywhere, BlueprintReadOnly )
 	TArray<FStreetMapTerrain> Terrains;
-	
+
 	/** 2D bounds (min) of this map's roads and buildings */
 	UPROPERTY( Category=StreetMap, VisibleAnywhere)
 	FVector2D BoundsMin;
@@ -998,3 +1001,5 @@ inline float FStreetMapNode::GetConnectionCost( const UStreetMap& StreetMap, con
 
 	return TotalCost;
 }
+
+

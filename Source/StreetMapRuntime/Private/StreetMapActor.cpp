@@ -5,7 +5,6 @@
 #include "StreetMapComponent.h"
 
 
-
 AStreetMapActor::AStreetMapActor(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {

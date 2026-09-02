@@ -3,6 +3,7 @@
 #include "StreetMapComponentDetails.h"
 #include "StreetMapImporting.h"
 
+#include "AssetToolsModule.h"
 #include "SlateBasics.h"
 #include "RawMesh.h"
 #include "PropertyEditorModule.h"
@@ -17,7 +18,6 @@
 #include "Widgets/Notifications/SNotificationList.h"
 #include "Framework/Notifications/NotificationManager.h"
 #include "Misc/AssertionMacros.h"
-#include "AssetToolsModule.h"
 
 #if ENGINE_MAJOR_VERSION < 5
 #include "AssetRegistryModule.h"

@@ -7,6 +7,7 @@
 
 DEFINE_LOG_CATEGORY(LogStreetMapObject);
 
+
 UStreetMap::UStreetMap()
 {
 #if WITH_EDITORONLY_DATA
@@ -64,7 +65,9 @@ TArray<USplineComponent*> UStreetMap::SpawnTaggedTerrainSplines(UWorld* World)
 			LabelName = FString::Printf(TEXT("VegetationContainer_%d"), index);
 		}
 
+#if WITH_EDITOR
 		TerrainActor->SetActorLabel(LabelName);
+#endif
 		TerrainActor->SetRootComponent(SplineComponent);
 		SplineComponent->RegisterComponent();
 		TerrainActor->SetActorLocation(FVector(StartLocation, 0.0f)); // Assuming Z=0 for flat terrain
@@ -78,8 +81,7 @@ TArray<USplineComponent*> UStreetMap::SpawnTaggedTerrainSplines(UWorld* World)
 			TerrainActor->Tags.Add(FName(*Terrain.TerrainType));
 			SplineComponent->SetClosedLoop(false);
 		}
-		
-		
+
 		SplineComponent->ClearSplinePoints();
 		SplineComponent->UpdateSpline();
 

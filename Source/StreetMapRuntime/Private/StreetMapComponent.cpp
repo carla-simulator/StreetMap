@@ -8,12 +8,12 @@
 #include "StaticMeshResources.h"
 #include "Engine/StaticMeshActor.h"
 #include "PolygonTools.h"
+#include "DynamicMeshGeneration.h"
 
 #include "PhysicsEngine/BodySetup.h"
 #include "ProceduralMeshComponent.h"
-#include "Generation/DynamicMeshGeneration.h"
 
-#include "Generation/MapGenFunctionLibrary.h"
+#include "Carla/BlueprintLibary/MapGenFunctionLibrary.h"
 
 
 #if WITH_EDITOR
@@ -339,7 +339,7 @@ void UStreetMapComponent::GenerateMesh()
 
         // Top of building
         {
-          TempPoints.SetNum( Building.BuildingPoints.Num(), false );
+          TempPoints.SetNum( Building.BuildingPoints.Num(), EAllowShrinking::No );
           for( int32 PointIndex = 0; PointIndex < Building.BuildingPoints.Num(); ++PointIndex )
           {
             TempPoints[ PointIndex ] = FVector( Building.BuildingPoints[ ( Building.BuildingPoints.Num() - PointIndex ) - 1 ], BuildingFillZ );
@@ -357,7 +357,7 @@ void UStreetMapComponent::GenerateMesh()
             {
               const int32 RightPointIndex = ( LeftPointIndex + 1 ) % Building.BuildingPoints.Num();
 
-              TempPoints.SetNum( 4, false );
+              TempPoints.SetNum( 4, EAllowShrinking::No );
 
               const int32 TopLeftVertexIndex = 0;
               TempPoints[ TopLeftVertexIndex ] = FVector( Building.BuildingPoints[ WindsClockwise ? RightPointIndex : LeftPointIndex ], BuildingFillZ );
@@ -372,7 +372,7 @@ void UStreetMapComponent::GenerateMesh()
               TempPoints[ BottomLeftVertexIndex ] = FVector( Building.BuildingPoints[ WindsClockwise ? RightPointIndex : LeftPointIndex ], 0.0f );
 
 
-              TempIndices.SetNum( 6, false );
+              TempIndices.SetNum( 6, EAllowShrinking::No );
 
               TempIndices[ 0 ] = BottomLeftVertexIndex;
               TempIndices[ 1 ] = TopLeftVertexIndex;
